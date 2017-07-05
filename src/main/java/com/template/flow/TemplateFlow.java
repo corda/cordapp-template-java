@@ -25,10 +25,10 @@ public class TemplateFlow {
     }
 
     @InitiatedBy(Initiator.class)
-    public static class Acceptor extends FlowLogic<Void> {
+    public static class Responder extends FlowLogic<Void> {
         private Party counterparty;
 
-        public Acceptor(Party counterparty) {
+        public Responder(Party counterparty) {
             this.counterparty = counterparty;
         }
 

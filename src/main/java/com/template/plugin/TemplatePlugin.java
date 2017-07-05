@@ -34,7 +34,4 @@ public class TemplatePlugin extends CordaPluginRegistry implements WebServerPlug
     public boolean customizeSerialization(SerializationCustomization custom) {
         return true;
     }
-
-    @Override public List<Function<CordaRPCOps, ?>> getWebApis() { return webApis; }
-    @Override public Map<String, String> getStaticServeDirs() { return staticServeDirs; }
 }
