@@ -8,7 +8,7 @@ which you can use to bootstrap your own CorDapp projects.
 **This is the JAVA version of the CorDapp template. For the KOTLIN version click 
 [here](https://github.com/corda/cordapp-template-kotlin/).**
 
-**NOTE: Previosuly, the cordapp-template repo included both Java and Kotlin versions, however from M14, we have split 
+**NOTE: Previously, the cordapp-template repo included both Java and Kotlin versions, however from M14, we have split 
 them out into separate repositories for ease of use.**
 
 ## Pre-Requisites
@@ -113,7 +113,7 @@ And the static web content is served from:
 
 ## Using the Example RPC Client
 
-The `ExampleClient.kt` file is a simple utility which uses the client
+The `TemplateClient.java` file is a simple utility which uses the client
 RPC library to connect to a node and log its transaction activity.
 It will log any existing states and listen for any future states. To build 
 the client use the following Gradle task:

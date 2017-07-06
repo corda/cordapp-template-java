@@ -1,7 +1,6 @@
 buildscript {
     ext.corda_release_version = '0.14-SNAPSHOT'
     ext.corda_gradle_plugins_version = '0.11.2'
-    ext.kotlin_version = '1.1.2'
     ext.junit_version = '4.12'
     ext.quasar_version = '0.7.6'
 
@@ -12,7 +11,6 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
@@ -48,8 +46,6 @@ sourceSets {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "junit:junit:$junit_version"
 
     // Corda integration dependencies
@@ -122,7 +118,7 @@ publishing {
     }
 }
 
-task runTemplateClientRPC(type: JavaExec) {
+task runTemplateClient(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.template.client.TemplateClient'
     args 'localhost:10006'
