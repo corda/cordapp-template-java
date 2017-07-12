@@ -7,6 +7,8 @@ import net.corda.client.rpc.CordaRPCClientConfiguration;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.messaging.DataFeed;
 import net.corda.core.transactions.SignedTransaction;
+import net.corda.core.utilities.NetworkHostAndPort;
+import net.corda.core.utilities.NetworkHostAndPortKt;
 import org.apache.activemq.artemis.api.core.ActiveMQException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ public class TemplateClient {
         }
 
         final Logger logger = LoggerFactory.getLogger(TemplateClient.class);
-        final HostAndPort nodeAddress = HostAndPort.fromString(args[0]);
+        final NetworkHostAndPort nodeAddress = NetworkHostAndPortKt.parseNetworkHostAndPort(args[0]);
         final CordaRPCClient client = new CordaRPCClient(nodeAddress, null, CordaRPCClientConfiguration.getDefault());
 
         // Can be amended in the Main file.
