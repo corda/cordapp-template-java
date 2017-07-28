@@ -1,8 +1,8 @@
 package com.template.contract;
 
 import net.corda.core.contracts.Contract;
-import net.corda.core.contracts.TransactionForContract;
 import net.corda.core.crypto.SecureHash;
+import net.corda.core.transactions.LedgerTransaction;
 
 /**
  * Define your contract here.
@@ -13,7 +13,7 @@ public class TemplateContract implements Contract {
      * exception for a transaction to be considered valid.
      */
     @Override
-    public void verify(TransactionForContract tx) {}
+    public void verify(LedgerTransaction tx) {}
 
     /** A reference to the underlying legal contract template and associated parameters. */
     private final SecureHash legalContractReference = SecureHash.sha256("Prose contract.");
