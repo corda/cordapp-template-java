@@ -12,21 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class TemplatePlugin extends CordaPluginRegistry implements WebServerPluginRegistry {
-    /**
-     * A list of classes that expose web APIs.
-     */
-    private final List<Function<CordaRPCOps, ?>> webApis = ImmutableList.of(TemplateApi::new);
-
-    /**
-     * A list of directories in the resources directory that will be served by Jetty under /web.
-     * The template's web frontend is accessible at /web/template.
-     */
-    private final Map<String, String> staticServeDirs = ImmutableMap.of(
-            // This will serve the templateWeb directory in resources to /web/template
-            "template", getClass().getClassLoader().getResource("templateWeb").toExternalForm()
-    );
-
+public class TemplatePlugin extends CordaPluginRegistry {
     /**
      * Whitelisting the required types for serialisation by the Corda node.
      */
