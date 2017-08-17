@@ -8,7 +8,7 @@ import net.corda.nodeapi.User;
 import net.corda.testing.driver.NodeHandle;
 
 import static java.util.Collections.*;
-import static net.corda.core.crypto.X509Utilities.getX509Name;
+import static net.corda.core.crypto.X500NameUtils.getX509Name;
 import static net.corda.testing.driver.Driver.driver;
 
 /**

@@ -14,8 +14,4 @@ public class TemplateContract implements Contract {
      */
     @Override
     public void verify(LedgerTransaction tx) {}
-
-    /** A reference to the underlying legal contract template and associated parameters. */
-    private final SecureHash legalContractReference = SecureHash.sha256("Prose contract.");
-    @Override public final SecureHash getLegalContractReference() { return legalContractReference; }
 }
