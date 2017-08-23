@@ -1,5 +1,6 @@
 package com.template.plugin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.template.api.TemplateApi;
@@ -33,5 +34,10 @@ public class TemplateWebPlugin implements WebServerPluginRegistry {
         return ImmutableMap.of(
                 // This will serve the templateWeb directory in resources to /web/template
                 "template", getClass().getClassLoader().getResource("templateWeb").toExternalForm());
+    }
+
+    @Override
+    public void customizeJSONSerialization(ObjectMapper objectMapper) {
+
     }
 }
