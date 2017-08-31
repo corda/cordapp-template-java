@@ -11,7 +11,6 @@ buildscript {
     }
 
     dependencies {
-        classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
     }
@@ -27,10 +26,8 @@ repositories {
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'net.corda.plugins.publish-utils'
 apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
-apply plugin: 'maven-publish'
 
 sourceSets {
     main {
@@ -94,28 +91,8 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     }
 }
 
-idea {
-    module {
-        downloadJavadoc = true // defaults to false
-        downloadSources = true
-    }
-}
-
-publishing {
-    publications {
-        jarAndSources(MavenPublication) {
-            from components.java
-            artifactId 'cordapp-name-goes-here'
-
-            artifact sourceJar
-            artifact javadocJar
-        }
-    }
-}
-
 task runTemplateClient(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.template.client.TemplateClient'
     args 'localhost:10006'
 }
-
