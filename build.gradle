@@ -40,6 +40,18 @@ sourceSets {
             srcDir "config/test"
         }
     }
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+    }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
 }
 
 dependencies {
@@ -59,6 +71,11 @@ dependencies {
     // CorDapp dependencies
     // Specify your cordapp's dependencies below, including dependent cordapps
     cordapp "net.corda:corda-finance:$corda_release_version"
+}
+
+task integrationTest(type: Test, dependsOn: []) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
