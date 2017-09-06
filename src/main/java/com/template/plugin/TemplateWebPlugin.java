@@ -5,8 +5,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.template.api.TemplateApi;
 import net.corda.core.messaging.CordaRPCOps;
-import net.corda.core.node.CordaPluginRegistry;
-import net.corda.core.serialization.SerializationCustomization;
 import net.corda.webserver.services.WebServerPluginRegistry;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +18,7 @@ public class TemplateWebPlugin implements WebServerPluginRegistry {
      */
     @NotNull
     @Override
-    public List<Function<CordaRPCOps, ? extends Object>> getWebApis() {
+    public List<Function<CordaRPCOps, ?>> getWebApis() {
         return ImmutableList.of(TemplateApi::new);
     }
 

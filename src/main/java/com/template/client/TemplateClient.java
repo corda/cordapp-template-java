@@ -1,12 +1,12 @@
 package com.template.client;
 
-import com.google.common.net.HostAndPort;
 import com.template.state.TemplateState;
 import net.corda.client.rpc.CordaRPCClient;
 import net.corda.client.rpc.CordaRPCClientConfiguration;
+import net.corda.core.contracts.StateAndRef;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.messaging.DataFeed;
-import net.corda.core.transactions.SignedTransaction;
+import net.corda.core.node.services.Vault;
 import net.corda.core.utilities.NetworkHostAndPort;
 import net.corda.core.utilities.NetworkHostAndPortKt;
 import org.apache.activemq.artemis.api.core.ActiveMQException;
@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -22,12 +21,17 @@ import java.util.concurrent.ExecutionException;
  * stream some State data from the node.
  */
 public class TemplateClient {
+    private static final Logger logger = LoggerFactory.getLogger(TemplateClient.class);
+
+    private static void logState(StateAndRef<TemplateState> state) {
+        logger.info("{}", state.getState().getData());
+    }
+
     public static void main(String[] args) throws ActiveMQException, InterruptedException, ExecutionException {
         if (args.length != 1) {
             throw new IllegalArgumentException("Usage: TemplateClient <node address>");
         }
 
-        final Logger logger = LoggerFactory.getLogger(TemplateClient.class);
         final NetworkHostAndPort nodeAddress = NetworkHostAndPortKt.parseNetworkHostAndPort(args[0]);
         final CordaRPCClient client = new CordaRPCClient(nodeAddress, null, CordaRPCClientConfiguration.getDefault(), true);
 
@@ -35,19 +39,13 @@ public class TemplateClient {
         final CordaRPCOps proxy = client.start("user1", "test").getProxy();
 
         // Grab all signed transactions and all future signed transactions.
-        final DataFeed<List<SignedTransaction>, SignedTransaction> txsAndFutureTxs = proxy.verifiedTransactionsFeed();
+        final DataFeed<Vault.Page<TemplateState>, Vault.Update<TemplateState>> dataFeed = proxy.vaultTrack(TemplateState.class);
 
-        final List<SignedTransaction> txs = txsAndFutureTxs.getSnapshot();
-        final Observable<SignedTransaction> futureTxs = txsAndFutureTxs.getUpdates();
+        final Vault.Page<TemplateState> snapshot = dataFeed.getSnapshot();
+        final Observable<Vault.Update<TemplateState>> updates = dataFeed.getUpdates();
 
         // Log the existing TemplateStates and listen for new ones.
-        futureTxs.startWith(txs).toBlocking().subscribe(
-                transaction ->
-                        transaction.getTx().getOutputs().forEach(
-                                output -> {
-                                    final TemplateState templateState = (TemplateState) output.getData();
-                                    logger.info(templateState.toString());
-                                })
-        );
+        snapshot.getStates().forEach(TemplateClient::logState);
+        updates.toBlocking().subscribe(update -> update.getProduced().forEach(TemplateClient::logState));
     }
 }
