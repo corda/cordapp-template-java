@@ -7,7 +7,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-
 public class FlowTests {
     private MockNetwork net;
     private MockNetwork.MockNode a;
