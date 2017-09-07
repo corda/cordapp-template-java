@@ -1,7 +1,6 @@
 package com.template.contract;
 
 import net.corda.core.contracts.Contract;
-import net.corda.core.crypto.SecureHash;
 import net.corda.core.transactions.LedgerTransaction;
 
 /**

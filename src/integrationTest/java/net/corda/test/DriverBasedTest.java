@@ -3,7 +3,6 @@ package net.corda.test;
 import net.corda.core.concurrent.CordaFuture;
 import net.corda.core.identity.Party;
 import net.corda.core.node.services.ServiceInfo;
-import net.corda.node.services.config.VerifierType;
 import net.corda.node.services.transactions.SimpleNotaryService;
 import net.corda.testing.driver.DriverParameters;
 import net.corda.testing.driver.NodeHandle;
@@ -15,7 +14,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static java.util.Collections.*;
 import static net.corda.testing.TestConstants.*;
 import static net.corda.testing.driver.Driver.driver;
 
