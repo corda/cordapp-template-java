@@ -5,7 +5,9 @@ import net.corda.core.identity.Party;
 import net.corda.core.node.services.ServiceInfo;
 import net.corda.node.services.config.VerifierType;
 import net.corda.node.services.transactions.SimpleNotaryService;
+import net.corda.testing.driver.DriverParameters;
 import net.corda.testing.driver.NodeHandle;
+import net.corda.testing.driver.NodeParameters;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,16 +26,16 @@ public class DriverBasedTest {
         Party bankA = getDUMMY_BANK_A();
         Party bankB = getDUMMY_BANK_B();
 
-        driver(true, dsl -> {
+        driver(new DriverParameters().setIsDebug(true), dsl -> {
             try {
                 HashSet<ServiceInfo> notaryServices = new HashSet<>(Arrays.asList(new ServiceInfo(SimpleNotaryService.Companion.getType(), null)));
 
                 // This starts three nodes simultaneously with startNode, which returns a future that completes when the node
                 // has completed startup. Then these are all resolved with getOrThrow which returns the NodeHandle list.
                 List<CordaFuture<NodeHandle>> handles = Arrays.asList(
-                        dsl.startNode(notary.getName(), notaryServices, emptyList(), VerifierType.InMemory, emptyMap(), null),
-                        dsl.startNode(bankA.getName(), emptySet(), emptyList(), VerifierType.InMemory, emptyMap(), null),
-                        dsl.startNode(bankB.getName(), emptySet(), emptyList(), VerifierType.InMemory, emptyMap(), null)
+                        dsl.startNode(new NodeParameters().setProvidedName(notary.getName()).setAdvertisedServices(notaryServices)),
+                        dsl.startNode(new NodeParameters().setProvidedName(bankA.getName())),
+                        dsl.startNode(new NodeParameters().setProvidedName(bankB.getName()))
                 );
                 NodeHandle notaryHandle = handles.get(0).get();
                 NodeHandle nodeAHandle = handles.get(1).get();
@@ -47,7 +49,7 @@ public class DriverBasedTest {
                 Assert.assertEquals(nodeAHandle.getRpc().partyFromX500Name(bankB.getName()).getName(), bankB.getName());
                 Assert.assertEquals(nodeBHandle.getRpc().partyFromX500Name(notary.getName()).getName(), notary.getName());
             } catch (Exception e) {
-               throw new RuntimeException("Caught exception during test" , e);
+                throw new RuntimeException("Caught exception during test", e);
             }
 
             return null;
