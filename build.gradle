@@ -67,6 +67,7 @@ dependencies {
     cordaRuntime "net.corda:corda-webserver:$corda_release_version"
 
     testCompile "net.corda:corda-test-utils:$corda_release_version"
+    testCompile "net.corda:corda-node-driver:$corda_release_version"
 
     // CorDapp dependencies
     // Specify your cordapp's dependencies below, including dependent cordapps

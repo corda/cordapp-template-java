@@ -5,10 +5,12 @@ import net.corda.core.node.services.ServiceInfo;
 import net.corda.node.services.config.VerifierType;
 import net.corda.node.services.transactions.ValidatingNotaryService;
 import net.corda.nodeapi.User;
+import net.corda.testing.driver.DriverParameters;
 import net.corda.testing.driver.NodeHandle;
+import net.corda.testing.driver.NodeParameters;
 
 import static java.util.Collections.*;
-import static net.corda.core.crypto.X500NameUtils.getX509Name;
+import static net.corda.core.utilities.X500NameUtils.getX509Name;
 import static net.corda.testing.driver.Driver.driver;
 
 /**
@@ -29,20 +31,21 @@ public class Main {
     public static void main(String[] args) {
         // No permissions required as we are not invoking flows.
         final User user = new User("user1", "test", emptySet());
-        driver(
-                true,
-                dsl -> {
-                    dsl.startNode(getX509Name("Controller", "London", "root@city.uk.example"),
-                            singleton(new ServiceInfo(ValidatingNotaryService.Companion.getType(), null)),
-                            emptyList(),
-                            VerifierType.InMemory,
-                            emptyMap(),
-                            null);
+        driver(new DriverParameters().setIsDebug(true), dsl -> {
+                    dsl.startNode(new NodeParameters()
+                            .setProvidedName(getX509Name("Controller", "London", "root@city.uk.example"))
+                            .setAdvertisedServices(singleton(new ServiceInfo(ValidatingNotaryService.Companion.getType(), null))));
 
                     try {
-                        NodeHandle nodeA = dsl.startNode(getX509Name("NodeA", "Paris", "root@city.fr.example"), emptySet(), ImmutableList.of(user), VerifierType.InMemory, emptyMap(), null).get();
-                        NodeHandle nodeB = dsl.startNode(getX509Name("NodeB", "Rome", "root@city.it.example"), emptySet(), ImmutableList.of(user), VerifierType.InMemory, emptyMap(), null).get();
-                        NodeHandle nodeC = dsl.startNode(getX509Name("NodeC", "New York", "root@city.us.example"), emptySet(), ImmutableList.of(user), VerifierType.InMemory, emptyMap(), null).get();
+                        NodeHandle nodeA = dsl.startNode(new NodeParameters()
+                                .setProvidedName(getX509Name("NodeA", "Paris", "root@city.fr.example"))
+                                .setRpcUsers(ImmutableList.of(user))).get();
+                        NodeHandle nodeB = dsl.startNode(new NodeParameters()
+                                .setProvidedName(getX509Name("NodeB", "Rome", "root@city.it.example"))
+                                .setRpcUsers(ImmutableList.of(user))).get();
+                        NodeHandle nodeC = dsl.startNode(new NodeParameters()
+                                .setProvidedName(getX509Name("NodeC", "New York", "root@city.us.example"))
+                                .setRpcUsers(ImmutableList.of(user))).get();
 
                         dsl.startWebserver(nodeA);
                         dsl.startWebserver(nodeB);
