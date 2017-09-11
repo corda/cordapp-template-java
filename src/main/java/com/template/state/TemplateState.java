@@ -11,12 +11,6 @@ import java.util.List;
  * Define your state object here.
  */
 public class TemplateState implements ContractState {
-    private final TemplateContract contract;
-
-    public TemplateState(TemplateContract contract) { this.contract = contract; }
-
-    @Override public TemplateContract getContract() { return contract; }
-
     /** The public keys of the involved parties. */
     @Override public List<AbstractParty> getParticipants() { return Collections.emptyList(); }
 }

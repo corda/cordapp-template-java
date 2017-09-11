@@ -9,7 +9,7 @@ import net.corda.testing.driver.NodeHandle;
 import net.corda.testing.driver.NodeParameters;
 
 import static java.util.Collections.*;
-import static net.corda.core.utilities.X500NameUtils.getX509Name;
+import static net.corda.core.utilities.X500NameUtils.getX500Name;
 import static net.corda.testing.driver.Driver.driver;
 
 /**
@@ -32,18 +32,18 @@ public class Main {
         final User user = new User("user1", "test", emptySet());
         driver(new DriverParameters().setIsDebug(true), dsl -> {
                     dsl.startNode(new NodeParameters()
-                            .setProvidedName(getX509Name("Controller", "London", "root@city.uk.example"))
+                            .setProvidedName(getX500Name("Controller", "London", "root@city.uk.example"))
                             .setAdvertisedServices(singleton(new ServiceInfo(ValidatingNotaryService.Companion.getType(), null))));
 
                     try {
                         NodeHandle nodeA = dsl.startNode(new NodeParameters()
-                                .setProvidedName(getX509Name("NodeA", "Paris", "root@city.fr.example"))
+                                .setProvidedName(getX500Name("NodeA", "Paris", "root@city.fr.example"))
                                 .setRpcUsers(ImmutableList.of(user))).get();
                         NodeHandle nodeB = dsl.startNode(new NodeParameters()
-                                .setProvidedName(getX509Name("NodeB", "Rome", "root@city.it.example"))
+                                .setProvidedName(getX500Name("NodeB", "Rome", "root@city.it.example"))
                                 .setRpcUsers(ImmutableList.of(user))).get();
                         NodeHandle nodeC = dsl.startNode(new NodeParameters()
-                                .setProvidedName(getX509Name("NodeC", "New York", "root@city.us.example"))
+                                .setProvidedName(getX500Name("NodeC", "New York", "root@city.us.example"))
                                 .setRpcUsers(ImmutableList.of(user))).get();
 
                         dsl.startWebserver(nodeA);
