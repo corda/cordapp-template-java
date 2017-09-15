@@ -2,6 +2,7 @@ package com.template.flow;
 
 import net.corda.node.internal.StartedNode;
 import net.corda.testing.node.MockNetwork;
+import net.corda.testing.node.MockNetwork.MockNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,9 +11,9 @@ import org.junit.rules.ExpectedException;
 
 public class FlowTests {
     private MockNetwork net;
-    private StartedNode a;
-    private StartedNode b;
-    private StartedNode c;
+    private StartedNode<MockNode> a;
+    private StartedNode<MockNode> b;
+    private StartedNode<MockNode> c;
 
     @Before
     public void setup() {
@@ -22,8 +23,8 @@ public class FlowTests {
         b = nodes.getPartyNodes().get(1);
         c = nodes.getPartyNodes().get(2);
         // For real nodes this happens automatically, but we have to manually register the flow for tests.
-        for (StartedNode node : nodes.getPartyNodes()) {
-            node.getInternals().registerInitiatedFlow(TemplateFlow.Responder.class);
+        for (StartedNode<MockNode> node : nodes.getPartyNodes()) {
+            node.registerInitiatedFlow(TemplateFlow.Responder.class);
         }
         net.runNetwork();
     }
