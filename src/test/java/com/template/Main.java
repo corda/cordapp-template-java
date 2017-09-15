@@ -38,18 +38,14 @@ public class Main {
 
                     try {
                         NodeHandle nodeA = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("NodeA", "Paris", "FR"))
+                                .setProvidedName(new CordaX500Name("PartyA", "London", "GB"))
                                 .setRpcUsers(ImmutableList.of(user))).get();
                         NodeHandle nodeB = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("NodeB", "Rome", "IT"))
-                                .setRpcUsers(ImmutableList.of(user))).get();
-                        NodeHandle nodeC = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("NodeC", "New York", "US"))
+                                .setProvidedName(new CordaX500Name("PartyB", "New York", "US"))
                                 .setRpcUsers(ImmutableList.of(user))).get();
 
                         dsl.startWebserver(nodeA);
                         dsl.startWebserver(nodeB);
-                        dsl.startWebserver(nodeC);
 
                         dsl.waitForAllNodesToFinish();
                     } catch (Throwable e) {
