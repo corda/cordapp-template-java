@@ -2,8 +2,8 @@ package net.corda.test;
 
 import net.corda.core.concurrent.CordaFuture;
 import net.corda.core.identity.Party;
-import net.corda.core.node.services.ServiceInfo;
 import net.corda.node.services.transactions.SimpleNotaryService;
+import net.corda.nodeapi.ServiceInfo;
 import net.corda.testing.driver.DriverParameters;
 import net.corda.testing.driver.NodeHandle;
 import net.corda.testing.driver.NodeParameters;
