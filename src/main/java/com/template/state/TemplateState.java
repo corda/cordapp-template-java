@@ -1,6 +1,5 @@
 package com.template.state;
 
-import com.template.contract.TemplateContract;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.identity.AbstractParty;
 
