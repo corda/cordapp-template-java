@@ -32,23 +32,19 @@ public class Main {
         final User user = new User("user1", "test", emptySet());
         driver(new DriverParameters().setIsDebug(true), dsl -> {
                     dsl.startNode(new NodeParameters()
-                            .setProvidedName(new CordaX500Name("Controller", "London", "root@city.uk.example"))
+                            .setProvidedName(new CordaX500Name("Controller", "London", "GB"))
                             .setAdvertisedServices(singleton(new ServiceInfo(ValidatingNotaryService.Companion.getType(), null))));
 
                     try {
                         NodeHandle nodeA = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("NodeA", "Paris", "root@city.fr.example"))
+                                .setProvidedName(new CordaX500Name("PartyA", "London", "GB"))
                                 .setRpcUsers(ImmutableList.of(user))).get();
                         NodeHandle nodeB = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("NodeB", "Rome", "root@city.it.example"))
-                                .setRpcUsers(ImmutableList.of(user))).get();
-                        NodeHandle nodeC = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("NodeC", "New York", "root@city.us.example"))
+                                .setProvidedName(new CordaX500Name("PartyB", "New York", "US"))
                                 .setRpcUsers(ImmutableList.of(user))).get();
 
                         dsl.startWebserver(nodeA);
                         dsl.startWebserver(nodeB);
-                        dsl.startWebserver(nodeC);
 
                         dsl.waitForAllNodesToFinish();
                     } catch (Throwable e) {
