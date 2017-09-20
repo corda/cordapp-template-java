@@ -1,15 +1,15 @@
 package com.template;
 
 import com.google.common.collect.ImmutableList;
-import net.corda.core.node.services.ServiceInfo;
+import net.corda.core.identity.CordaX500Name;
 import net.corda.node.services.transactions.ValidatingNotaryService;
+import net.corda.nodeapi.ServiceInfo;
 import net.corda.nodeapi.User;
 import net.corda.testing.driver.DriverParameters;
 import net.corda.testing.driver.NodeHandle;
 import net.corda.testing.driver.NodeParameters;
 
 import static java.util.Collections.*;
-import net.corda.core.identity.CordaX500Name;
 import static net.corda.testing.driver.Driver.driver;
 
 /**
