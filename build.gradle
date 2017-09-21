@@ -1,6 +1,6 @@
 buildscript {
     ext.corda_release_version = '0.16-SNAPSHOT'
-    ext.corda_gradle_plugins_version = '0.16.0'
+    ext.corda_gradle_plugins_version = '0.16.5'
     ext.junit_version = '4.12'
     ext.quasar_version = '0.7.6'
 
@@ -62,10 +62,10 @@ dependencies {
     cordaCompile "net.corda:corda-finance:$corda_release_version"
     cordaCompile "net.corda:corda-jackson:$corda_release_version"
     cordaCompile "net.corda:corda-rpc:$corda_release_version"
+    cordaCompile "net.corda:corda-node-api:$corda_release_version"
     cordaCompile "net.corda:corda-webserver-impl:$corda_release_version"
     cordaRuntime "net.corda:corda:$corda_release_version"
     cordaRuntime "net.corda:corda-webserver:$corda_release_version"
-    cordaCompile "net.corda:corda-node-api:$corda_release_version"
 
     testCompile "net.corda:corda-node-driver:$corda_release_version"
 
@@ -81,16 +81,16 @@ task integrationTest(type: Test, dependsOn: []) {
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     directory "./build/nodes"
-    networkMap "CN=Controller,O=R3,OU=corda,L=London,C=UK"
+    networkMap "O=Controller,L=London,C=GB"
     node {
-        name "CN=Controller,O=R3,OU=corda,L=London,C=UK"
+        name "O=Controller,L=London,C=GB"
         advertisedServices = ["corda.notary.validating"]
         p2pPort 10002
         rpcPort 10003
         cordapps = ["net.corda:corda-finance:$corda_release_version"]
     }
     node {
-        name "CN=NodeA,O=NodeA,L=London,C=UK"
+        name "O=PartyA,L=London,C=GB"
         advertisedServices = []
         p2pPort 10005
         rpcPort 10006
@@ -99,7 +99,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
     }
     node {
-        name "CN=NodeB,O=NodeB,L=New York,C=US"
+        name "O=PartyB,L=New York,C=US"
         advertisedServices = []
         p2pPort 10008
         rpcPort 10009
