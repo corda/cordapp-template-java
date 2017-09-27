@@ -32,7 +32,7 @@ public class TemplateClient {
         }
 
         final NetworkHostAndPort nodeAddress = NetworkHostAndPort.parse(args[0]);
-        final CordaRPCClient client = new CordaRPCClient(nodeAddress, null, CordaRPCClientConfiguration.getDefault(), true);
+        final CordaRPCClient client = new CordaRPCClient(nodeAddress, CordaRPCClientConfiguration.DEFAULT);
 
         // Can be amended in the Main file.
         final CordaRPCOps proxy = client.start("user1", "test").getProxy();
