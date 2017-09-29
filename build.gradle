@@ -80,6 +80,10 @@ task integrationTest(type: Test, dependsOn: []) {
     classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters" // Required for passing named arguments to your flow via the shell.
+}
+
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     directory "./build/nodes"
     networkMap "O=Controller,L=London,C=GB"
