@@ -8,8 +8,8 @@ which you can use to bootstrap your own CorDapp projects.
 **This is the JAVA version of the CorDapp template. For the KOTLIN version click 
 [here](https://github.com/corda/cordapp-template-kotlin/).**
 
-**NOTE: Previously, the cordapp-template repo included both Java and Kotlin versions, however from M14, we have split 
-them out into separate repositories for ease of use.**
+**NOTE: Previously, the cordapp-template repo included both Java and Kotlin versions. From M14, we have split 
+them out into separate repositories.**
 
 ## Pre-Requisites
 
@@ -40,7 +40,7 @@ And change directories to the newly cloned repo:
 
 It is recommended to checkout a milestone release tag of Corda. To do this you must run: 
 
-    git checkout -b [your-branch-name] release-M14
+    git checkout release-M[X] (where 'X' is the latest milestone)
 
 ### Snapshots
 
@@ -49,7 +49,7 @@ It is recommended to checkout a milestone release tag of Corda. To do this you m
 When building from the latest SNAPSHOT release you must also clone the master
 branch of the [corda repository](https://github.com/corda/corda) and then run `./gradlew install`
 to build the dependencies required for this template.
-​     
+    
 ## Building the CorDapp template:
 
 **Unix:** 
@@ -76,31 +76,31 @@ run the nodes with:
 
 **Unix:**
 
-     ./runnodes --log-to-console --logging-level=DEBUG
+     ./runnodes
 
 **Windows:**
 
-    runnodes.bat --log-to-console --logging-level=DEBUG
+    runnodes.bat
 
 You should now have three Corda nodes running on your machine serving 
 the template.
 
 When the nodes have booted up, you should see a message like the following 
-in the console: 
+in the node terminal windows: 
 
-     Node started up and registered in 5.007 sec
+     Node for [X] started up and registered in x.xxx sec
 
 ## Interacting with the CorDapp via HTTP
 
 The CorDapp defines a couple of HTTP API end-points and also serves some
 static web content. Initially, these return generic template responses.
 
-The nodes can be found using the following port numbers, defined in the 
+The nodes can be found using the following port numbers, defined in 
 `build.gradle`, as well as the `node.conf` file for each node found
-under `build/nodes/NodeX` or `build/nodes/NodeX`:
+under `build/nodes/partyX`:
 
-     NodeA: localhost:10007
-     NodeB: localhost:10010
+     PartyA: localhost:10007
+     PartyB: localhost:10010
 
 As the nodes start up, they should tell you which host and port their
 embedded web server is running on. The API endpoints served are:
@@ -113,29 +113,25 @@ And the static web content is served from:
 
 ## Using the Example RPC Client
 
-The `TemplateClient.java` file is a simple utility which uses the client
+The `ExampleClient.java` file is a simple utility which uses the client
 RPC library to connect to a node and log its transaction activity.
-It will log any existing states and listen for any future states. To build 
-the client use the following Gradle task:
-
-     ./gradlew runTemplateClient
+It will log any existing states and listen for any future states.
 
 To run the client:
 
 **Via IntelliJ:**
 
-Select the 'Run Template RPC Client'
-run configuration which, by default, connect to NodeA (RPC port 10006). Click the
-Green Arrow to run the client.
+Select the 'Run Template RPC Client' run configuration which, by default, 
+connects to PartyA (RPC port 10006). Click the Green Arrow to run the client.
 
 **Via the command line:**
 
-Run the following Gradle task:
+Run the following Gradle task from the root of the template:
 
      ./gradlew runTemplateClient
      
-Note that the template rPC client won't output anything to the console as no state 
-objects are contained in either NodeA's or NodeB's vault.
+Note that the template RPC client won't output anything to the console as no state 
+objects are contained in PartyA's vault.
 
 ## Running the Nodes Across Multiple Machines
 
@@ -151,8 +147,8 @@ machine. Each computer should also have a copy of `runnodes` and
 
 For example, you may end up with the following layout:
 
-* Machine 1: `controller`, `nodea`, `runnodes`, `runnodes.bat`
-* Machine 2: `nodeb`, `nodec`, `runnodes`, `runnodes.bat`
+* Machine 1: `controller`, `partya`, `runnodes`, `runnodes.bat`
+* Machine 2: `partyb`, `partyc`, `runnodes`, `runnodes.bat`
 
 You must now edit the configuration file for each node, including the 
 controller. Open each node's config file (`[nodeName]/node.conf`), and make 
