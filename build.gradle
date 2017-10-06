@@ -1,6 +1,6 @@
 buildscript {
-    ext.corda_release_version = '0.16-SNAPSHOT'
-    ext.corda_gradle_plugins_version = '0.16.5'
+    ext.corda_release_version = '1.0'
+    ext.corda_gradle_plugins_version = '1.0.0'
     ext.junit_version = '4.12'
     ext.quasar_version = '0.7.6'
 
