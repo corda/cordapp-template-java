@@ -26,7 +26,6 @@ repositories {
 }
 
 apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
 
@@ -71,7 +70,8 @@ dependencies {
     testCompile "net.corda:corda-node-driver:$corda_release_version"
 
     // CorDapp dependencies
-    // Specify your cordapp's dependencies below, including dependent cordapps
+    // Specify your CorDapp's dependencies below, including dependent CorDapps.
+    // We've defined Cash as a dependent CorDapp as an example.
     cordapp "net.corda:corda-finance:$corda_release_version"
 }
 

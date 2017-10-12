@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
-// Serialization whitelist (only needed for 3rd party classes, but we use a local example here).
+// Serialization whitelist.
 public class TemplateSerializationWhitelist implements SerializationWhitelist {
     @NotNull
     @Override
@@ -14,7 +14,8 @@ public class TemplateSerializationWhitelist implements SerializationWhitelist {
         return Collections.singletonList(TemplateData.class);
     }
 
-    // Not annotated with @CordaSerializable just for use with manual whitelisting above.
+    // This class is not annotated with @CordaSerializable, so it must be added to the serialization whitelist, above,
+    // if we want to send it to other nodes within a flow.
     public static class TemplateData {
         private final String payload;
 

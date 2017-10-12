@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Demonstration of how to use the CordaRPCClient to connect to a Corda Node and
- * stream some State data from the node.
+ * stream the contents of the node's vault.
  */
 public class TemplateClient {
     private static final Logger logger = LoggerFactory.getLogger(TemplateClient.class);
@@ -37,7 +37,7 @@ public class TemplateClient {
         // Can be amended in the Main file.
         final CordaRPCOps proxy = client.start("user1", "test").getProxy();
 
-        // Grab all signed transactions and all future signed transactions.
+        // Grab all existing TemplateStates and all future TemplateStates.
         final DataFeed<Vault.Page<TemplateState>, Vault.Update<TemplateState>> dataFeed = proxy.vaultTrack(TemplateState.class);
 
         final Vault.Page<TemplateState> snapshot = dataFeed.getSnapshot();

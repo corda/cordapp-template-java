@@ -1,6 +1,7 @@
 package com.template;
 
 import com.google.common.collect.ImmutableList;
+import net.corda.core.concurrent.CordaFuture;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.node.services.transactions.ValidatingNotaryService;
 import net.corda.nodeapi.User;
@@ -13,7 +14,7 @@ import static java.util.Collections.*;
 import static net.corda.testing.driver.Driver.driver;
 
 /**
- * This file is exclusively for being able to run your nodes through an IDE (as opposed to running deployNodes)
+ * This file is exclusively for being able to run your nodes through an IDE (as opposed to using deployNodes)
  * Do not use in a production environment.
  * <p>
  * To debug your CorDapp:
@@ -35,22 +36,23 @@ public class Main {
                             .setProvidedName(new CordaX500Name("Controller", "London", "GB"))
                             .setAdvertisedServices(singleton(new ServiceInfo(ValidatingNotaryService.Companion.getType(), null))));
 
+                    CordaFuture<NodeHandle> nodeAFuture = dsl.startNode(new NodeParameters()
+                            .setProvidedName(new CordaX500Name("PartyA", "London", "GB"))
+                            .setRpcUsers(ImmutableList.of(user)));
+                    CordaFuture<NodeHandle> nodeB = dsl.startNode(new NodeParameters()
+                            .setProvidedName(new CordaX500Name("PartyB", "New York", "US"))
+                            .setRpcUsers(ImmutableList.of(user)));
+
                     try {
-                        NodeHandle nodeA = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("PartyA", "London", "GB"))
-                                .setRpcUsers(ImmutableList.of(user))).get();
-                        NodeHandle nodeB = dsl.startNode(new NodeParameters()
-                                .setProvidedName(new CordaX500Name("PartyB", "New York", "US"))
-                                .setRpcUsers(ImmutableList.of(user))).get();
-
-                        dsl.startWebserver(nodeA);
-                        dsl.startWebserver(nodeB);
-
-                        dsl.waitForAllNodesToFinish();
+                        dsl.startWebserver(nodeAFuture.get());
+                        dsl.startWebserver(nodeB.get());
                     } catch (Throwable e) {
                         System.err.println("Encountered exception in node startup: " + e.getMessage());
                         e.printStackTrace();
                     }
+
+                    dsl.waitForAllNodesToFinish();
+
                     return null;
                 }
         );

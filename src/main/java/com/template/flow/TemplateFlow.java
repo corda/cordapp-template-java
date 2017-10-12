@@ -1,11 +1,7 @@
 package com.template.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
-import net.corda.core.flows.FlowLogic;
-import net.corda.core.flows.InitiatedBy;
-import net.corda.core.flows.InitiatingFlow;
-import net.corda.core.flows.StartableByRPC;
-import net.corda.core.identity.Party;
+import net.corda.core.flows.*;
 
 /**
  * Define your flow here.
@@ -26,10 +22,10 @@ public class TemplateFlow {
 
     @InitiatedBy(Initiator.class)
     public static class Responder extends FlowLogic<Void> {
-        private Party counterparty;
+        private FlowSession counterpartySession;
 
-        public Responder(Party counterparty) {
-            this.counterparty = counterparty;
+        public Responder(FlowSession counterpartySession) {
+            this.counterpartySession = counterpartySession;
         }
 
         /**

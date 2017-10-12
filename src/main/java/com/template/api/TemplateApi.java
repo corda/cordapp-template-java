@@ -7,16 +7,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 // This API is accessible from /api/template. The endpoint paths specified below are relative to it.
 @Path("template")
 public class TemplateApi {
-    private final CordaRPCOps services;
+    private final CordaRPCOps rpcOps;
 
     public TemplateApi(CordaRPCOps services) {
-        this.services = services;
+        this.rpcOps = services;
     }
 
     /**
@@ -26,8 +24,6 @@ public class TemplateApi {
     @Path("templateGetEndpoint")
     @Produces(MediaType.APPLICATION_JSON)
     public Response templateGetEndpoint() {
-        Map<String, Object> entity = new LinkedHashMap<>();
-        entity.put("message", "Template GET endpoint.");
-        return Response.ok(entity).build();
+        return Response.ok("Template GET endpoint.").build();
     }
 }
