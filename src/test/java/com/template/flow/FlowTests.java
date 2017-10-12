@@ -9,15 +9,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class FlowTests {
-    private MockNetwork net;
+    private MockNetwork network;
     private StartedNode<MockNetwork.MockNode> a;
     private StartedNode<MockNetwork.MockNode> b;
     private StartedNode<MockNetwork.MockNode> c;
 
     @Before
     public void setup() {
-        net = new MockNetwork();
-        MockNetwork.BasketOfNodes nodes = net.createSomeNodes(3);
+        network = new MockNetwork();
+        MockNetwork.BasketOfNodes nodes = network.createSomeNodes(3);
         a = nodes.getPartyNodes().get(0);
         b = nodes.getPartyNodes().get(1);
         c = nodes.getPartyNodes().get(2);
@@ -25,12 +25,12 @@ public class FlowTests {
         for (StartedNode<MockNetwork.MockNode> node : nodes.getPartyNodes()) {
             node.registerInitiatedFlow(TemplateFlow.Responder.class);
         }
-        net.runNetwork();
+        network.runNetwork();
     }
 
     @After
     public void tearDown() {
-        net.stopNodes();
+        network.stopNodes();
     }
 
     @Rule
