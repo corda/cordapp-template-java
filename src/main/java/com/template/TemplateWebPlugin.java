@@ -1,9 +1,8 @@
-package com.template.plugin;
+package com.template;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.template.api.TemplateApi;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.webserver.services.WebServerPluginRegistry;
 import org.jetbrains.annotations.NotNull;

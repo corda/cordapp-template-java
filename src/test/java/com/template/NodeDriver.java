@@ -27,7 +27,7 @@ import static net.corda.testing.driver.Driver.driver;
  * 4. Set your breakpoints in your CorDapp code.
  * 5. Run the "Debug CorDapp" remote debug run configuration.
  */
-public class Main {
+public class NodeDriver {
     public static void main(String[] args) {
         // No permissions required as we are not invoking flows.
         final User user = new User("user1", "test", emptySet());

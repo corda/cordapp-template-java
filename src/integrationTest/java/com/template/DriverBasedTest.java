@@ -1,4 +1,4 @@
-package net.corda.test;
+package com.template;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;

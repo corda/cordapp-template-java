@@ -1,6 +1,5 @@
-package com.template.client;
+package com.template;
 
-import com.template.state.TemplateState;
 import net.corda.client.rpc.CordaRPCClient;
 import net.corda.client.rpc.CordaRPCClientConfiguration;
 import net.corda.core.contracts.StateAndRef;

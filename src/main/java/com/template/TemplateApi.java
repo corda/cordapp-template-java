@@ -1,4 +1,4 @@
-package com.template.api;
+package com.template;
 
 import net.corda.core.messaging.CordaRPCOps;
 
