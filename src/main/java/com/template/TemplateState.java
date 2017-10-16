@@ -1,4 +1,4 @@
-package com.template.state;
+package com.template;
 
 import net.corda.core.contracts.ContractState;
 import net.corda.core.identity.AbstractParty;

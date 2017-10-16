@@ -1,5 +1,6 @@
-package com.template.flow;
+package com.template;
 
+import com.template.TemplateFlow;
 import net.corda.node.internal.StartedNode;
 import net.corda.testing.node.MockNetwork;
 import org.junit.After;
