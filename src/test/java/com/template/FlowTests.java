@@ -1,6 +1,5 @@
 package com.template;
 
-import com.template.TemplateFlow;
 import net.corda.node.internal.StartedNode;
 import net.corda.testing.node.MockNetwork;
 import org.junit.After;
@@ -8,6 +7,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static net.corda.testing.CoreTestUtils.setCordappPackages;
+import static net.corda.testing.CoreTestUtils.unsetCordappPackages;
 
 public class FlowTests {
     private MockNetwork network;
@@ -17,6 +19,7 @@ public class FlowTests {
 
     @Before
     public void setup() {
+        setCordappPackages("com.template");
         network = new MockNetwork();
         MockNetwork.BasketOfNodes nodes = network.createSomeNodes(3);
         a = nodes.getPartyNodes().get(0);
@@ -32,6 +35,7 @@ public class FlowTests {
     @After
     public void tearDown() {
         network.stopNodes();
+        unsetCordappPackages();
     }
 
     @Rule
