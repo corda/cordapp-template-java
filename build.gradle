@@ -20,9 +20,8 @@ repositories {
     mavenLocal()
     jcenter()
     mavenCentral()
-    maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
-    maven { url 'https://dl.bintray.com/kotlin/exposed' }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
 }
 
 apply plugin: 'java'
@@ -72,6 +71,8 @@ dependencies {
     // CorDapp dependencies
     // Specify your CorDapp's dependencies below, including dependent CorDapps.
     // We've defined Cash as a dependent CorDapp as an example.
+    cordapp project(":cordapp")
+    cordapp project(":cordapp-contracts-states")
     cordapp "net.corda:corda-finance:$corda_release_version"
 }
 
@@ -92,7 +93,11 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         advertisedServices = ["corda.notary.validating"]
         p2pPort 10002
         rpcPort 10003
-        cordapps = ["net.corda:corda-finance:$corda_release_version"]
+        cordapps = [
+                "com.template:states-and-contracts:$version",
+                "com.template:other-sources:$version",
+                "net.corda:corda-finance:$corda_release_version"
+        ]
     }
     node {
         name "O=PartyA,L=London,C=GB"
@@ -100,7 +105,11 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         p2pPort 10005
         rpcPort 10006
         webPort 10007
-        cordapps = ["net.corda:corda-finance:$corda_release_version"]
+        cordapps = [
+                "com.template:states-and-contracts:$version",
+                "com.template:other-sources:$version",
+                "net.corda:corda-finance:$corda_release_version"
+        ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
     }
     node {
@@ -109,7 +118,11 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         p2pPort 10008
         rpcPort 10009
         webPort 10010
-        cordapps = ["net.corda:corda-finance:$corda_release_version"]
+        cordapps = [
+                "com.template:states-and-contracts:$version",
+                "com.template:other-sources:$version",
+                "net.corda:corda-finance:$corda_release_version"
+        ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
     }
 }
