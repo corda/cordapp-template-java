@@ -38,16 +38,16 @@ public class DriverBasedTest {
 
             try {
                 NodeHandle notaryHandle = handles.get(0).get();
-                NodeHandle nodeAHandle = handles.get(1).get();
-                NodeHandle nodeBHandle = handles.get(2).get();
+                NodeHandle partyAHandle = handles.get(1).get();
+                NodeHandle partyBHandle = handles.get(2).get();
 
                 // This test will call via the RPC proxy to find a party of another node to verify that the nodes have
                 // started and can communicate. This is a very basic test, in practice tests would be starting flows,
                 // and verifying the states in the vault and other important metrics to ensure that your CorDapp is working
                 // as intended.
                 Assert.assertEquals(notaryHandle.getRpc().wellKnownPartyFromX500Name(bankA.getName()).getName(), bankA.getName());
-                Assert.assertEquals(nodeAHandle.getRpc().wellKnownPartyFromX500Name(bankB.getName()).getName(), bankB.getName());
-                Assert.assertEquals(nodeBHandle.getRpc().wellKnownPartyFromX500Name(notary.getName()).getName(), notary.getName());
+                Assert.assertEquals(partyAHandle.getRpc().wellKnownPartyFromX500Name(bankB.getName()).getName(), bankB.getName());
+                Assert.assertEquals(partyBHandle.getRpc().wellKnownPartyFromX500Name(notary.getName()).getName(), notary.getName());
             } catch (Exception e) {
                 throw new RuntimeException("Caught exception during test", e);
             }

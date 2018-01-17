@@ -82,8 +82,8 @@ The nodes can be found using the following port numbers, defined in the
 `build.gradle`, as well as the `node.conf` file for each node found
 under `build/nodes/NodeX` or `build/nodes/NodeX`:
 
-     NodeA: localhost:10007
-     NodeB: localhost:10010
+     PartyA: localhost:10007
+     PartyB: localhost:10010
 
 As the nodes start up, they should tell you which host and port their
 embedded web server is running on. The API endpoints served are:
@@ -108,7 +108,7 @@ To run the client:
 **Via IntelliJ:**
 
 Select the 'Run Template RPC Client'
-run configuration which, by default, connect to NodeA (RPC port 10006). Click the
+run configuration which, by default, connect to PartyA (RPC port 10006). Click the
 Green Arrow to run the client.
 
 **Via the command line:**
@@ -118,7 +118,7 @@ Run the following Gradle task:
      ./gradlew runTemplateClient
      
 Note that the template rPC client won't output anything to the console as no state 
-objects are contained in either NodeA's or NodeB's vault.
+objects are contained in either PartyA's or PartyB's vault.
 
 ## Running the Nodes Across Multiple Machines
 
@@ -128,24 +128,24 @@ same subnet.
 After deploying the nodes, navigate to the build folder (`build/
 nodes`) and move some of the individual node folders to 
 separate machines on the same subnet (e.g. using a USB key). It is important 
-that no nodes - including the controller node - end up on more than one 
-machine. Each computer should also have a copy of `runnodes` and 
+that no nodes - including the network map/notary node - end up on more than 
+one machine. Each computer should also have a copy of `runnodes` and 
 `runnodes.bat`.
 
 For example, you may end up with the following layout:
 
-* Machine 1: `controller`, `nodea`, `runnodes`, `runnodes.bat`
-* Machine 2: `nodeb`, `nodec`, `runnodes`, `runnodes.bat`
+* Machine 1: `NetworkMapAndNotary`, `PartyA`, `runnodes`, `runnodes.bat`
+* Machine 2: `PartyB`, `PartyC`, `runnodes`, `runnodes.bat`
 
 You must now edit the configuration file for each node, including the 
-controller. Open each node's config file (`[nodeName]/node.conf`), and make 
-the following changes:
+network map/notary. Open each node's config file (`[nodeName]/node.conf`), and 
+make the following changes:
 
 * Change the P2P address to the machine's ip address (e.g. 
   `p2pAddress="10.18.0.166:10005"`)
 * Change the network map address to the ip address of the machine where the 
-  controller node is running (e.g. `networkMapService { address="10.18.0.166:10002"...`) 
-  (please note that the controller will not have a network map address entry)
+  network map/notary node is running (e.g. `networkMapService { address="10.18.0.166:10002"...`) 
+  (please note that the network map/notary will not have a network map address entry)
 
 Each machine should now run its nodes using `runnodes` or `runnodes.bat` 
 files. Once they are up and running, the nodes should be able to communicate 

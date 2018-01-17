@@ -33,19 +33,19 @@ public class NodeDriver {
         final User user = new User("user1", "test", emptySet());
         driver(new DriverParameters().setIsDebug(true), dsl -> {
                     dsl.startNode(new NodeParameters()
-                            .setProvidedName(new CordaX500Name("Controller", "London", "GB"))
+                            .setProvidedName(new CordaX500Name("NetworkMapAndNotary", "London", "GB"))
                             .setAdvertisedServices(singleton(new ServiceInfo(ValidatingNotaryService.Companion.getType(), null))));
 
-                    CordaFuture<NodeHandle> nodeAFuture = dsl.startNode(new NodeParameters()
+                    CordaFuture<NodeHandle> partyAFuture = dsl.startNode(new NodeParameters()
                             .setProvidedName(new CordaX500Name("PartyA", "London", "GB"))
                             .setRpcUsers(ImmutableList.of(user)));
-                    CordaFuture<NodeHandle> nodeB = dsl.startNode(new NodeParameters()
+                    CordaFuture<NodeHandle> partyBFuture = dsl.startNode(new NodeParameters()
                             .setProvidedName(new CordaX500Name("PartyB", "New York", "US"))
                             .setRpcUsers(ImmutableList.of(user)));
 
                     try {
-                        dsl.startWebserver(nodeAFuture.get());
-                        dsl.startWebserver(nodeB.get());
+                        dsl.startWebserver(partyAFuture.get());
+                        dsl.startWebserver(partyBFuture.get());
                     } catch (Throwable e) {
                         System.err.println("Encountered exception in node startup: " + e.getMessage());
                         e.printStackTrace();
