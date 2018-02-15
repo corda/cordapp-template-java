@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableList;
 import net.corda.core.concurrent.CordaFuture;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.node.services.transactions.ValidatingNotaryService;
-import net.corda.nodeapi.User;
-import net.corda.nodeapi.internal.*;
 import net.corda.testing.driver.DriverParameters;
 import net.corda.testing.driver.NodeHandle;
 import net.corda.testing.driver.NodeParameters;
+import net.corda.testing.node.User;
 
-import static java.util.Collections.*;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
 import static net.corda.testing.driver.Driver.driver;
 
 /**
@@ -31,11 +31,7 @@ public class NodeDriver {
     public static void main(String[] args) {
         // No permissions required as we are not invoking flows.
         final User user = new User("user1", "test", emptySet());
-        driver(new DriverParameters().setIsDebug(true), dsl -> {
-                    dsl.startNode(new NodeParameters()
-                            .setProvidedName(new CordaX500Name("NetworkMapAndNotary", "London", "GB"))
-                            .setAdvertisedServices(singleton(new ServiceInfo(ValidatingNotaryService.Companion.getType(), null))));
-
+        driver(new DriverParameters().setIsDebug(true).setWaitForAllNodesToFinish(true), dsl -> {
                     CordaFuture<NodeHandle> partyAFuture = dsl.startNode(new NodeParameters()
                             .setProvidedName(new CordaX500Name("PartyA", "London", "GB"))
                             .setRpcUsers(ImmutableList.of(user)));
@@ -50,8 +46,6 @@ public class NodeDriver {
                         System.err.println("Encountered exception in node startup: " + e.getMessage());
                         e.printStackTrace();
                     }
-
-                    dsl.waitForAllNodesToFinish();
 
                     return null;
                 }

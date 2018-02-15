@@ -1,9 +1,9 @@
 buildscript {
     ext.corda_release_group = 'net.corda'
-    ext.corda_release_version = '2.0.0'
-    ext.corda_gradle_plugins_version = '1.0.0'
+    ext.corda_release_version = 'corda-3.0'
+    ext.corda_gradle_plugins_version = '3.0.5'
     ext.junit_version = '4.12'
-    ext.quasar_version = '0.7.6'
+    ext.quasar_version = '0.7.9'
 
     repositories {
         mavenLocal()
@@ -12,6 +12,7 @@ buildscript {
     }
 
     dependencies {
+        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
     }
@@ -26,6 +27,7 @@ repositories {
 }
 
 apply plugin: 'java'
+apply plugin: 'net.corda.plugins.cordapp'
 apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
 
@@ -88,12 +90,14 @@ tasks.withType(JavaCompile) {
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     directory "./build/nodes"
-    networkMap "O=NetworkMapAndNotary,L=London,C=GB"
     node {
         name "O=NetworkMapAndNotary,L=London,C=GB"
-        advertisedServices = ["corda.notary.validating"]
+        notary = [validating : true]
         p2pPort 10002
-        rpcPort 10003
+        rpcSettings {
+            port 10003
+            address "localhost:10003"
+        }
         cordapps = [
                 "$project.group:cordapp-contracts-states:$project.version",
                 "$project.group:cordapp:$project.version",
@@ -102,9 +106,11 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     }
     node {
         name "O=PartyA,L=London,C=GB"
-        advertisedServices = []
         p2pPort 10005
-        rpcPort 10006
+        rpcSettings {
+            port 10006
+            address "localhost:10006"
+        }
         webPort 10007
         cordapps = [
                 "$project.group:cordapp-contracts-states:$project.version",
@@ -115,9 +121,11 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     }
     node {
         name "O=PartyB,L=New York,C=US"
-        advertisedServices = []
         p2pPort 10008
-        rpcPort 10009
+        rpcSettings {
+            port 10009
+            address "localhost:10009"
+        }
         webPort 10010
         cordapps = [
                 "$project.group:cordapp-contracts-states:$project.version",
