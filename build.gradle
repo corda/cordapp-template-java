@@ -1,7 +1,7 @@
 buildscript {
     ext.corda_release_group = 'net.corda'
-    ext.corda_release_version = 'corda-3.0'
-    ext.corda_gradle_plugins_version = '3.0.5'
+    ext.corda_release_version = 'corda-3.0-RC01'
+    ext.corda_gradle_plugins_version = '3.0.8'
     ext.junit_version = '4.12'
     ext.quasar_version = '0.7.9'
 
@@ -91,13 +91,9 @@ tasks.withType(JavaCompile) {
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     directory "./build/nodes"
     node {
-        name "O=NetworkMapAndNotary,L=London,C=GB"
+        name "O=Notary,L=London,C=GB"
         notary = [validating : true]
         p2pPort 10002
-        rpcSettings {
-            port 10003
-            address "localhost:10003"
-        }
         cordapps = [
                 "$project.group:cordapp-contracts-states:$project.version",
                 "$project.group:cordapp:$project.version",
@@ -108,8 +104,8 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         name "O=PartyA,L=London,C=GB"
         p2pPort 10005
         rpcSettings {
-            port 10006
-            address "localhost:10006"
+            address("localhost:10006")
+            adminAddress("localhost:10046")
         }
         webPort 10007
         cordapps = [
@@ -123,8 +119,8 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         name "O=PartyB,L=New York,C=US"
         p2pPort 10008
         rpcSettings {
-            port 10009
-            address "localhost:10009"
+            address("localhost:10009")
+            adminAddress("localhost:10049")
         }
         webPort 10010
         cordapps = [

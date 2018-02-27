@@ -134,7 +134,7 @@ one machine. Each computer should also have a copy of `runnodes` and
 
 For example, you may end up with the following layout:
 
-* Machine 1: `NetworkMapAndNotary`, `PartyA`, `runnodes`, `runnodes.bat`
+* Machine 1: `Notary`, `PartyA`, `runnodes`, `runnodes.bat`
 * Machine 2: `PartyB`, `PartyC`, `runnodes`, `runnodes.bat`
 
 You must now edit the configuration file for each node, including the 
