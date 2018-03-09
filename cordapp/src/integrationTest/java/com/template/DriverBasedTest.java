@@ -25,13 +25,13 @@ public class DriverBasedTest {
 
     @Test
     public void nodeTest() {
-        driver(new DriverParameters().setIsDebug(true).setStartNodesInProcess(true), dsl -> {
+        driver(new DriverParameters().withIsDebug(true).withStartNodesInProcess(true), dsl -> {
 
             // This starts three nodes simultaneously with startNode, which returns a future that completes when the node
             // has completed startup. Then these are all resolved with getOrThrow which returns the NodeHandle list.
             List<CordaFuture<NodeHandle>> handleFutures = ImmutableList.of(
-                    dsl.startNode(new NodeParameters().setProvidedName(bankA.getName())),
-                    dsl.startNode(new NodeParameters().setProvidedName(bankB.getName()))
+                    dsl.startNode(new NodeParameters().withProvidedName(bankA.getName())),
+                    dsl.startNode(new NodeParameters().withProvidedName(bankB.getName()))
             );
 
             try {
@@ -54,11 +54,11 @@ public class DriverBasedTest {
 
     @Test
     public void nodeWebserverTest() {
-        driver(new DriverParameters().setIsDebug(true).setStartNodesInProcess(true), dsl -> {
+        driver(new DriverParameters().withIsDebug(true).withStartNodesInProcess(true), dsl -> {
 
             List<CordaFuture<NodeHandle>> handleFutures = ImmutableList.of(
-                    dsl.startNode(new NodeParameters().setProvidedName(bankA.getName())),
-                    dsl.startNode(new NodeParameters().setProvidedName(bankB.getName()))
+                    dsl.startNode(new NodeParameters().withProvidedName(bankA.getName())),
+                    dsl.startNode(new NodeParameters().withProvidedName(bankB.getName()))
             );
 
             try {
