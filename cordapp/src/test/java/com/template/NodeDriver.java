@@ -31,13 +31,13 @@ public class NodeDriver {
     public static void main(String[] args) {
         // No permissions required as we are not invoking flows.
         final User user = new User("user1", "test", emptySet());
-        driver(new DriverParameters().setIsDebug(true).setWaitForAllNodesToFinish(true), dsl -> {
+        driver(new DriverParameters().withIsDebug(true).withWaitForAllNodesToFinish(true), dsl -> {
                     CordaFuture<NodeHandle> partyAFuture = dsl.startNode(new NodeParameters()
-                            .setProvidedName(new CordaX500Name("PartyA", "London", "GB"))
-                            .setRpcUsers(ImmutableList.of(user)));
+                            .withProvidedName(new CordaX500Name("PartyA", "London", "GB"))
+                            .withRpcUsers(ImmutableList.of(user)));
                     CordaFuture<NodeHandle> partyBFuture = dsl.startNode(new NodeParameters()
-                            .setProvidedName(new CordaX500Name("PartyB", "New York", "US"))
-                            .setRpcUsers(ImmutableList.of(user)));
+                            .withProvidedName(new CordaX500Name("PartyB", "New York", "US"))
+                            .withRpcUsers(ImmutableList.of(user)));
 
                     try {
                         dsl.startWebserver(partyAFuture.get());
