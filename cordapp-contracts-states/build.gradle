@@ -18,6 +18,10 @@ sourceSets {
     }
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters" // Required for passing named arguments to your flow via the shell.
+}
+
 dependencies {
     // Corda integration dependencies
     cordaCompile "$corda_release_group:corda-core:$corda_release_version"
