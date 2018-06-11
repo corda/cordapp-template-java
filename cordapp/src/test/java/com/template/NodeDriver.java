@@ -8,6 +8,7 @@ import net.corda.testing.driver.DriverParameters;
 import net.corda.testing.driver.NodeHandle;
 import net.corda.testing.driver.NodeParameters;
 import net.corda.testing.node.User;
+import com.google.common.collect.ImmutableSet;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
@@ -30,7 +31,7 @@ import static net.corda.testing.driver.Driver.driver;
 public class NodeDriver {
     public static void main(String[] args) {
         // No permissions required as we are not invoking flows.
-        final User user = new User("user1", "test", emptySet());
+        final User user = new User("user1", "test", ImmutableSet.of("ALL"));
         driver(new DriverParameters().withIsDebug(true).withWaitForAllNodesToFinish(true), dsl -> {
                     CordaFuture<NodeHandle> partyAFuture = dsl.startNode(new NodeParameters()
                             .withProvidedName(new CordaX500Name("PartyA", "London", "GB"))
