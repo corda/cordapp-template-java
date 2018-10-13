@@ -43,10 +43,10 @@ public class ArtTransferFlow extends FlowLogic<Void> {
         }).findFirst().get();
         ArtState inputArtState = inputArtStateAndRef.getState().getData();
 
-        ArtState outputArtState = new ArtState(inputArtState.getAppraiser(), newOwner, artist, title);
+        ArtState outputArtState = new ArtState(inputArtState.getAppraiser(), newOwner, artist, title, inputArtState.getType());
         final Command<ArtCommands.Transfer> txCommand = new Command<>(
                 new ArtCommands.Transfer(),
-                ImmutableList.of(getOurIdentity().getOwningKey(), newOwner.getOwningKey()));
+                ImmutableList.of(getOurIdentity().getOwningKey()));
         final TransactionBuilder txBuilder = new TransactionBuilder(inputArtStateAndRef.getState().getNotary())
                 .addInputState(inputArtStateAndRef)
                 .addOutputState(outputArtState, ArtContract.ID)
@@ -54,13 +54,9 @@ public class ArtTransferFlow extends FlowLogic<Void> {
 
         txBuilder.verify(getServiceHub());
 
-        final SignedTransaction partSignedTx = getServiceHub().signInitialTransaction(txBuilder);
+        final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);
 
-        FlowSession otherPartySession = initiateFlow(newOwner);
-        final SignedTransaction fullySignedTx = subFlow(
-                new CollectSignaturesFlow(partSignedTx, ImmutableSet.of(otherPartySession), CollectSignaturesFlow.Companion.tracker()));
-
-        subFlow(new FinalityFlow(fullySignedTx));
+        subFlow(new FinalityFlow(signedTx));
 
         return null;
     }

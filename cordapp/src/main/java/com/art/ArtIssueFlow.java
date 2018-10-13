@@ -16,11 +16,13 @@ public class ArtIssueFlow extends FlowLogic<Void> {
     private final Party owner;
     private final String artist;
     private final String title;
+    private final String type;
 
-    public ArtIssueFlow(Party owner, String artist, String title) {
+    public ArtIssueFlow(Party owner, String artist, String title, String type) {
         this.owner = owner;
         this.artist = artist;
         this.title = title;
+        this.type = type;
     }
 
     private final ProgressTracker progressTracker = new ProgressTracker();
@@ -35,23 +37,19 @@ public class ArtIssueFlow extends FlowLogic<Void> {
     public Void call() throws FlowException {
         final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
-        ArtState artState = new ArtState(getOurIdentity(), owner, artist, title);
+        ArtState artState = new ArtState(getOurIdentity(), owner, artist, title, type);
         final Command<ArtCommands.Issue> txCommand = new Command<>(
                 new ArtCommands.Issue(),
-                ImmutableList.of(getOurIdentity().getOwningKey(), owner.getOwningKey()));
+                ImmutableList.of(getOurIdentity().getOwningKey()));
         final TransactionBuilder txBuilder = new TransactionBuilder(notary)
                 .addOutputState(artState, ArtContract.ID)
                 .addCommand(txCommand);
 
         txBuilder.verify(getServiceHub());
 
-        final SignedTransaction partSignedTx = getServiceHub().signInitialTransaction(txBuilder);
+        final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);
 
-        FlowSession otherPartySession = initiateFlow(owner);
-        final SignedTransaction fullySignedTx = subFlow(
-                new CollectSignaturesFlow(partSignedTx, ImmutableSet.of(otherPartySession), CollectSignaturesFlow.Companion.tracker()));
-
-        subFlow(new FinalityFlow(fullySignedTx));
+        subFlow(new FinalityFlow(signedTx));
 
         return null;
     }

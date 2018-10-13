@@ -12,15 +12,17 @@ public class ArtState implements ContractState {
     private final Party owner;
     private final String artist;
     private final String title;
+    private final String type;
 
     private List<AbstractParty> participants;
 
-    public ArtState(Party appraiser, Party owner, String artist, String title) {
+    public ArtState(Party appraiser, Party owner, String artist, String title, String type) {
         this.appraiser = appraiser;
         this.owner = owner;
         this.artist = artist;
         this.title = title;
-        this.participants = ImmutableList.of(this.owner);
+        this.type = type;
+        this.participants = ImmutableList.of(this.appraiser, this.owner);
     }
 
     @Override public List<AbstractParty> getParticipants() {
@@ -41,5 +43,9 @@ public class ArtState implements ContractState {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getType() {
+        return type;
     }
 }
