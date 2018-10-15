@@ -1,0 +1,13 @@
+set -x
+if [ ! -d ~/gradle-1.6 ]
+then
+	curl -L -O http://services.gradle.org/distributions/gradle-4.10-bin.zip
+	unzip gradle-4.10-bin.zip
+	rm -f gradle-4.10-bin.zip
+	cd gradle-4.10/bin
+	chmod +x ./gradle
+	cd /tmp/src
+	~/gradle-4.10/bin/gradle build
+	cd target
+	cp *.jar /deployments
+fi
