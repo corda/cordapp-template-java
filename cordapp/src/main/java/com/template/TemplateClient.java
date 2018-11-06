@@ -2,6 +2,7 @@ package com.template;
 
 import net.corda.client.rpc.CordaRPCClient;
 import net.corda.client.rpc.CordaRPCClientConfiguration;
+import net.corda.core.contracts.ContractState;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.messaging.DataFeed;
@@ -12,38 +13,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Demonstration of how to use the CordaRPCClient to connect to a Corda Node and
- * stream the contents of the node's vault.
+ * Demonstration of how to use the CordaRPCClient to connect to a Corda node and
+ * perform RPC operations on the node.
  */
 public class TemplateClient {
     private static final Logger logger = LoggerFactory.getLogger(TemplateClient.class);
+    private static final String RPC_USERNAME = "user1";
+    private static final String RPC_PASSWORD = "test";
 
-    private static void logState(StateAndRef<TemplateState> state) {
-        logger.info("{}", state.getState().getData());
-    }
-
-    public static void main(String[] args) throws ActiveMQException, InterruptedException, ExecutionException {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Usage: TemplateClient <node address>");
-        }
-
+    public static void main(String[] args) {
+        // Create an RPC connection to the node.
+        if (args.length != 1) throw new IllegalArgumentException("Usage: TemplateClient <node address>");
         final NetworkHostAndPort nodeAddress = NetworkHostAndPort.parse(args[0]);
         final CordaRPCClient client = new CordaRPCClient(nodeAddress, CordaRPCClientConfiguration.DEFAULT);
+        final CordaRPCOps proxy = client.start(RPC_USERNAME, RPC_PASSWORD).getProxy();
 
-        // Can be amended in the Main file.
-        final CordaRPCOps proxy = client.start("user1", "test").getProxy();
-
-        // Grab all existing TemplateStates and all future TemplateStates.
-        final DataFeed<Vault.Page<TemplateState>, Vault.Update<TemplateState>> dataFeed = proxy.vaultTrack(TemplateState.class);
-
-        final Vault.Page<TemplateState> snapshot = dataFeed.getSnapshot();
-        final Observable<Vault.Update<TemplateState>> updates = dataFeed.getUpdates();
-
-        // Log the existing TemplateStates and listen for new ones.
-        snapshot.getStates().forEach(TemplateClient::logState);
-        updates.toBlocking().subscribe(update -> update.getProduced().forEach(TemplateClient::logState));
+        // Interact with the node.
+        // For example, here we grab all existing ContractStates and log them.
+        final List<StateAndRef<ContractState>> existingContractStates = proxy.vaultQuery(ContractState.class).getStates();
+        for (StateAndRef<ContractState> stateAndRef : existingContractStates) {
+            logger.info("{}", stateAndRef.getState().getData());
+        }
     }
 }

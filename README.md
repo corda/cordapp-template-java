@@ -98,14 +98,9 @@ And the static web content is served from:
 
 ## Using the Example RPC Client
 
-The `TemplateClient.java` file is a simple utility which uses the client
-RPC library to connect to a node and log its transaction activity.
-It will log any existing states and listen for any future states. To build 
-the client use the following Gradle task:
-
-     ./gradlew runTemplateClient
-
-To run the client:
+The `ExampleClient.java` file is a simple utility which uses the client
+RPC library to connect to a node and log its transaction activity. To run the 
+client:
 
 **Via IntelliJ:**
 
@@ -119,7 +114,7 @@ Run the following Gradle task:
 
      ./gradlew runTemplateClient
      
-Note that the template rPC client won't output anything to the console as no state 
+Note that the template RPC client won't output anything to the console as no state 
 objects are contained in either PartyA's or PartyB's vault.
 
 ## Running the Nodes Across Multiple Machines
