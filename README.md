@@ -2,126 +2,123 @@
   <img src="https://www.corda.net/wp-content/uploads/2016/11/fg005_corda_b.png" alt="Corda" width="500">
 </p>
 
-# CorDapp Template
+# CorDapp Template - Java
 
-Welcome to the CorDapp template. The CorDapp template is a stubbed-out CorDapp 
-which you can use to bootstrap your own CorDapp projects.
+Welcome to the Java CorDapp template. The CorDapp template is a stubbed-out CorDapp that you can use to bootstrap 
+your own CorDapps.
 
-**This is the JAVA version of the CorDapp template. For the KOTLIN version click 
+**This is the Java version of the CorDapp template. The Kotlin equivalent is 
 [here](https://github.com/corda/cordapp-template-kotlin/).**
 
-## Pre-Requisites
+# Pre-Requisites
 
-You will need the following installed on your machine before you can start:
+See https://docs.corda.net/getting-set-up.html.
 
-* [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) 
-  installed and available on your path (Minimum version: 1.8_131).
-* [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) (Minimum version 2017.1)
-* git
-* Optional: [h2 web console](http://www.h2database.com/html/download.html)
-  (download the "platform-independent zip")
+# Usage
 
-For more detailed information, see the
-[getting set up](https://docs.corda.net/getting-set-up.html) page on the
-Corda docsite.
+## Running the nodes
 
-## Getting Set Up
+See https://docs.corda.net/tutorial-cordapp.html#running-the-example-cordapp.
 
-To get started, clone this repository with:
+## Interacting with the nodes
 
-     git clone https://github.com/corda/cordapp-template-java.git
+### Shell
 
-And change directories to the newly cloned repo:
+When started via the command line, each node will display an interactive shell:
 
-     cd cordapp-template-java
+    Welcome to the Corda interactive shell.
+    Useful commands include 'help' to see what is available, and 'bye' to shut down the node.
+    
+    Tue Nov 06 11:58:13 GMT 2018>>>
 
-## Building the CorDapp template:
+You can use this shell to interact with your node. For example, enter `run networkMapSnapshot` to see a list of 
+the other nodes on the network:
 
-**Unix:** 
+    Tue Nov 06 11:58:13 GMT 2018>>> run networkMapSnapshot
+    [
+      {
+      "addresses" : [ "localhost:10002" ],
+      "legalIdentitiesAndCerts" : [ "O=Notary, L=London, C=GB" ],
+      "platformVersion" : 3,
+      "serial" : 1541505484825
+    },
+      {
+      "addresses" : [ "localhost:10005" ],
+      "legalIdentitiesAndCerts" : [ "O=PartyA, L=London, C=GB" ],
+      "platformVersion" : 3,
+      "serial" : 1541505382560
+    },
+      {
+      "addresses" : [ "localhost:10008" ],
+      "legalIdentitiesAndCerts" : [ "O=PartyB, L=New York, C=US" ],
+      "platformVersion" : 3,
+      "serial" : 1541505384742
+    }
+    ]
+    
+    Tue Nov 06 12:30:11 GMT 2018>>> 
 
-     ./gradlew deployNodes
+You can find out more about the node shell [here](https://docs.corda.net/shell.html).
 
-**Windows:**
+### Client
 
-     gradlew.bat deployNodes
+`clients/src/main/java/com/template/Client.java` defines a simple command-line client that connects to a node via RPC 
+and prints a list of the other nodes on the network.
 
-Note: You'll need to re-run this build step after making any changes to
-the template for these to take effect on the node.
+#### Running the client
 
-## Running the Nodes
+##### Via the command line
 
-Once the build finishes, change directories to the folder where the newly
-built nodes are located:
+Run the `runTemplateClient` Gradle task. By default, it connects to the node with RPC address `localhost:10006` with 
+the username `user1` and the password `test`.
 
-     cd build/nodes
+##### Via IntelliJ
 
-The Gradle build script will have created a folder for each node. You'll
-see three folders, one for each node and a `runnodes` script. You can
-run the nodes with:
+Run the `Run Template Client` run configuration. By default, it connects to the node with RPC address `localhost:10006` 
+with the username `user1` and the password `test`.
 
-**Unix:**
+### Webserver
 
-     ./runnodes
+`clients/src/main/java/com/template/webserver/` defines a simple Spring webserver that connects to a node via RPC and 
+allows you to interact with the node over HTTP.
 
-**Windows:**
+The API endpoints are defined here:
 
-    runnodes.bat
+     clients/src/main/java/com/template/webserver/Controller.java
 
-You should now have three Corda nodes running on your machine serving 
-the template.
+And a static webpage is defined here:
 
-When the nodes have booted up, you should see a message like the following 
-in the console: 
+     clients/src/main/resources/static/
 
-     Node started up and registered in 5.007 sec
+#### Running the webserver
 
-## Interacting with the CorDapp via HTTP
+##### Via the command line
 
-The CorDapp defines a couple of HTTP API end-points and also serves some
-static web content. Initially, these return generic template responses.
+Run the `runTemplateServer` Gradle task. By default, it connects to the node with RPC address `localhost:10006` with 
+the username `user1` and the password `test`, and serves the webserver on port `localhost:10050`.
 
-The nodes can be found using the following port numbers, defined in the 
-`build.gradle`, as well as the `node.conf` file for each node found
-under `build/nodes/NodeX` or `build/nodes/NodeX`:
+##### Via IntelliJ
 
-     PartyA: localhost:10007
-     PartyB: localhost:10010
+Run the `Run Template Server` run configuration. By default, it connects to the node with RPC address `localhost:10006` 
+with the username `user1` and the password `test`, and serves the webserver on port `localhost:10050`.
 
-As the nodes start up, they should tell you which host and port their
-embedded web server is running on. The API endpoints served are:
+#### Interacting with the webserver
 
-     /api/template/templateGetEndpoint
+The static webpage is served on:
 
-And the static web content is served from:
+    http://localhost:10050
 
-     /web/template
+While the sole template endpoint is served on:
 
-## Using the Example RPC Client
+    http://localhost:10050/customendpoint
+    
+# Extending the template
 
-The `ExampleClient.java` file is a simple utility which uses the client
-RPC library to connect to a node and log its transaction activity. To run the 
-client:
+You should extend this template as follows:
 
-**Via IntelliJ:**
+* Add your own state and contract definitions under `cordapp-contracts-states/src/main/java/`
+* Add your own flow definitions under `cordapp/src/main/java/`
+* Extend or replace the client and webserver under `clients/src/main/java/`
 
-Select the 'Run Template RPC Client'
-run configuration which, by default, connect to PartyA (RPC port 10006). Click the
-Green Arrow to run the client.
-
-**Via the command line:**
-
-Run the following Gradle task:
-
-     ./gradlew runTemplateClient
-     
-Note that the template RPC client won't output anything to the console as no state 
-objects are contained in either PartyA's or PartyB's vault.
-
-## Running the Nodes Across Multiple Machines
-
-See https://docs.corda.net/tutorial-cordapp.html#running-nodes-across-machines.
-
-## Further reading
-
-Tutorials and developer docs for CorDapps and Corda are
-[here](https://docs.corda.net/).
+For a guided example of how to extend this template, see the Hello, World! tutorial 
+[here](https://docs.corda.net/hello-world-introduction.html).

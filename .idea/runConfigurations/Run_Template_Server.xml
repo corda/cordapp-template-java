@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Template Server" type="Application" factoryName="Application" singleton="true">
+    <envs>
+      <env name="server.port" value="10050" />
+      <env name="config.rpc.host" value="localhost" />
+      <env name="config.rpc.port" value="10006" />
+      <env name="config.rpc.username" value="user1" />
+      <env name="config.rpc.password" value="test" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.template.webserver.Starter" />
+    <module name="clients_main" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.template.webserver.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -5,22 +5,20 @@ import net.corda.testing.node.MockNetwork;
 import net.corda.testing.node.StartedMockNode;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class FlowTests {
-    private MockNetwork network;
-    private StartedMockNode a;
-    private StartedMockNode b;
+    private final MockNetwork network = new MockNetwork(ImmutableList.of("com.template"));
+    private final StartedMockNode a = network.createNode();
+    private final StartedMockNode b = network.createNode();
+
+    public FlowTests() {
+        a.registerInitiatedFlow(Responder.class);
+        b.registerInitiatedFlow(Responder.class);
+    }
 
     @Before
     public void setup() {
-        network = new MockNetwork(ImmutableList.of("com.template"));
-        a = network.createNode();
-        b = network.createNode();
-        a.registerInitiatedFlow(TemplateFlow.Responder.class);
-        b.registerInitiatedFlow(TemplateFlow.Responder.class);
         network.runNetwork();
     }
 
@@ -29,11 +27,8 @@ public class FlowTests {
         network.stopNodes();
     }
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
-
     @Test
-    public void test() throws Exception {
+    public void dummyTest() {
 
     }
 }
