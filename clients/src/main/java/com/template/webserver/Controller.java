@@ -21,7 +21,7 @@ public class Controller {
     }
 
     @GetMapping(value = "/templateendpoint", produces = "text/plain")
-    private String status() {
+    private String templateendpoint() {
         return "Define an endpoint here.";
     }
 }
