@@ -1,6 +1,7 @@
 package com.template;
 
 import co.paralleluniverse.fibers.Suspendable;
+import net.corda.core.flows.FlowException;
 import net.corda.core.flows.FlowLogic;
 import net.corda.core.flows.FlowSession;
 import net.corda.core.flows.InitiatedBy;
@@ -18,7 +19,7 @@ public class Responder extends FlowLogic<Void> {
 
     @Suspendable
     @Override
-    public Void call() {
+    public Void call() throws FlowException {
         // Responder flow logic goes here.
 
         return null;
