@@ -1,5 +1,6 @@
 package com.template;
 
+import net.corda.core.contracts.BelongsToContract;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.identity.AbstractParty;
 
@@ -9,6 +10,7 @@ import java.util.List;
 // *********
 // * State *
 // *********
+@BelongsToContract(TemplateContract.class)
 public class TemplateState implements ContractState {
 
     public TemplateState() {
