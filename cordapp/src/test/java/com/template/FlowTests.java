@@ -1,6 +1,7 @@
 package com.template;
 
 import com.google.common.collect.ImmutableList;
+import com.template.flows.Responder;
 import net.corda.testing.node.MockNetwork;
 import net.corda.testing.node.StartedMockNode;
 import org.junit.After;
