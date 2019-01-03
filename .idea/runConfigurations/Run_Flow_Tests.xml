@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Flow Tests" type="JUnit" factoryName="JUnit">
-    <module name="cordapp_test" />
+    <module name="com.template.workflows.test" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.template.contracts.*" />
