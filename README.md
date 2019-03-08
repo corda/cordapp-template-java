@@ -21,7 +21,7 @@ See https://docs.corda.net/getting-set-up.html.
 We recommend editing your IntelliJ preferences so that you use the gradle runner - this means that the quasar utils 
 plugin will make sure that some flags (like -javaagent - see "Alternatively..." below) are set for you.
 
-To switch to using the gradle runner, Currently in  (but just search for `runner`)
+To switch to using the gradle runner:
 
  * Navigate to `Build, Execution, Deployment -> Build Tools -> Gradle -> Runner` (or search for `runner`)
    * Windows: this is in "Settings"
