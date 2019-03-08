@@ -1,14 +1,15 @@
 buildscript {
     ext {
         corda_release_group = 'net.corda'
-        corda_release_version = '4.0-SNAPSHOT'
-        corda_gradle_plugins_version = '4.0.37'
+        corda_release_version = '4.0'
+        corda_gradle_plugins_version = '4.0.42'
         junit_version = '4.12'
         quasar_version = '0.7.10'
         spring_boot_version = '2.0.2.RELEASE'
         spring_boot_gradle_plugin_version = '2.0.2.RELEASE'
         slf4j_version = '1.7.25'
-        log4j_version = '2.9.1'
+        log4j_version = '2.11.2'
+        corda_platform_version = '4'
     }
 
     repositories {
@@ -27,18 +28,28 @@ buildscript {
 }
 
 allprojects {
+    apply plugin: 'java'
+
     repositories {
         mavenLocal()
         jcenter()
         mavenCentral()
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda' }
-        // Can be removed post-release - used to get nightly snapshot build.
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev' }
         maven { url 'https://jitpack.io' }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-parameters" // Required by Corda's serialisation framework.
+    }
+
+    jar {
+        // This makes the JAR's SHA-256 hash repeatable.
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
     }
 }
 
-apply plugin: 'java'
+
 apply plugin: 'net.corda.plugins.cordapp'
 apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
@@ -47,8 +58,8 @@ cordapp {
     info {
         name "CorDapp Template"
         vendor "Corda Open Source"
-        targetPlatformVersion 4
-        minimumPlatformVersion 4
+        targetPlatformVersion corda_platform_version.toInteger()
+        minimumPlatformVersion corda_platform_version.toInteger()
     }
 }
 
@@ -77,12 +88,14 @@ dependencies {
     cordaCompile "org.slf4j:jul-to-slf4j:$slf4j_version"
 }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-parameters" // Required by Corda's serialisation framework.
-}
-
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
-    directory "./build/nodes"
+    nodeDefaults {
+        projectCordapp {
+            deploy = false
+        }
+        cordapp project(':contracts')
+        cordapp project(':workflows')
+    }
     node {
         name "O=Notary,L=London,C=GB"
         notary = [validating : false]
@@ -91,10 +104,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             address("localhost:10003")
             adminAddress("localhost:10043")
         }
-        cordapps = [
-                "$project.group:contracts:$project.version",
-                "$project.group:workflows:$project.version"
-        ]
     }
     node {
         name "O=PartyA,L=London,C=GB"
@@ -103,10 +112,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             address("localhost:10006")
             adminAddress("localhost:10046")
         }
-        cordapps = [
-                "$project.group:contracts:$project.version",
-                "$project.group:workflows:$project.version"
-        ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
     node {
@@ -116,10 +121,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             address("localhost:10009")
             adminAddress("localhost:10049")
         }
-        cordapps = [
-                "$project.group:contracts:$project.version",
-                "$project.group:workflows:$project.version"
-        ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
 }
