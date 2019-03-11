@@ -52,6 +52,9 @@ lib/dokka.jar
 *.ipr
 *.iws
 
+# if you use the installQuasar task
+lib
+
 ## Plugin-specific files:
 
 # IntelliJ
