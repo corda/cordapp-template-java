@@ -5,12 +5,9 @@ import com.google.common.collect.ImmutableList;
 import com.r3.corda.lib.tokens.contracts.states.EvolvableTokenType;
 import com.r3.corda.lib.tokens.contracts.types.TokenPointer;
 import com.r3.corda.lib.tokens.workflows.flows.evolvable.CreateEvolvableToken;
-import com.r3.corda.lib.tokens.workflows.flows.shell.IssueTokens;
+import com.r3.corda.lib.tokens.workflows.flows.rpc.IssueTokens;
 import com.template.states.ExampleEvolvableTokenType;
-import net.corda.core.contracts.LinearPointer;
-import net.corda.core.contracts.StateAndRef;
-import net.corda.core.contracts.TransactionState;
-import net.corda.core.contracts.UniqueIdentifier;
+import net.corda.core.contracts.*;
 import net.corda.core.flows.FlowException;
 import net.corda.core.flows.FlowLogic;
 import net.corda.core.flows.StartableByRPC;
@@ -53,7 +50,7 @@ public class ExampleFlowWithEvolvableToken {
             EvolvableTokenType evolvableTokenType = stateAndRef.getState().getData();
             LinearPointer linearPointer = new LinearPointer(evolvableTokenType.getLinearId(), EvolvableTokenType.class);
             TokenPointer token = new TokenPointer(linearPointer, evolvableTokenType.getFractionDigits());
-            return (SignedTransaction) subFlow(new IssueTokens(token, amount, this.getOurIdentity(), recipient));
+            return (SignedTransaction) subFlow(new IssueTokens(new Amount(amount, token), this.getOurIdentity(), recipient));
         }
     }
 

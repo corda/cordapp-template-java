@@ -2,7 +2,8 @@ package com.template.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.r3.corda.lib.tokens.money.FiatCurrency;
-import com.r3.corda.lib.tokens.workflows.flows.shell.IssueTokens;
+import com.r3.corda.lib.tokens.workflows.flows.rpc.IssueTokens;
+import net.corda.core.contracts.Amount;
 import net.corda.core.flows.FlowException;
 import net.corda.core.flows.FlowLogic;
 import net.corda.core.flows.StartableByRPC;
@@ -34,6 +35,6 @@ public class ExampleFlowWithFixedToken extends FlowLogic<SignedTransaction> {
     @Suspendable
     public SignedTransaction call() throws FlowException {
         FiatCurrency token = new FiatCurrency(Currency.getInstance(this.currency));
-        return (SignedTransaction) subFlow(new IssueTokens(token, amount, this.getOurIdentity(), recipient));
+        return (SignedTransaction) subFlow(new IssueTokens(new Amount(amount, token), this.getOurIdentity(), recipient));
     }
 }
