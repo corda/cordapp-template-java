@@ -1,6 +1,11 @@
 package com.template.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
+import com.google.common.collect.ImmutableList;
+import com.r3.corda.lib.tokens.contracts.states.FungibleToken;
+import com.r3.corda.lib.tokens.contracts.types.IssuedTokenType;
+import com.r3.corda.lib.tokens.contracts.types.TokenType;
+import com.r3.corda.lib.tokens.contracts.utilities.TransactionUtilitiesKt;
 import com.r3.corda.lib.tokens.money.FiatCurrency;
 import com.r3.corda.lib.tokens.workflows.flows.rpc.IssueTokens;
 import net.corda.core.contracts.Amount;
@@ -10,19 +15,18 @@ import net.corda.core.flows.StartableByRPC;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.utilities.ProgressTracker;
-import java.util.Currency;
 
 @StartableByRPC
 public class ExampleFlowWithFixedToken extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
     private final String currency;
-    private final Long amount;
+    private final Long quantity;
     private final Party recipient;
 
-    public ExampleFlowWithFixedToken(String currency, Long amount, Party recipient) {
+    public ExampleFlowWithFixedToken(String currency, Long quantity, Party recipient) {
         this.currency = currency;
-        this.amount = amount;
+        this.quantity = quantity;
         this.recipient = recipient;
     }
 
@@ -34,7 +38,19 @@ public class ExampleFlowWithFixedToken extends FlowLogic<SignedTransaction> {
     @Override
     @Suspendable
     public SignedTransaction call() throws FlowException {
-        FiatCurrency token = new FiatCurrency(Currency.getInstance(this.currency));
-        return (SignedTransaction) subFlow(new IssueTokens(new Amount(amount, token), this.getOurIdentity(), recipient));
+        //get the fixed token type
+        TokenType token = FiatCurrency.Companion.getInstance(currency);
+
+        //assign the issuer who will be issuing the tokens
+        IssuedTokenType issuedTokenType = new IssuedTokenType(getOurIdentity(), token);
+
+        //specify how much amount to issue to holder
+        Amount<IssuedTokenType> amount = new Amount(quantity, issuedTokenType);
+
+        //create fungible amount specifying the new owner
+        FungibleToken fungibleToken  = new FungibleToken(amount, recipient, TransactionUtilitiesKt.getAttachmentIdForGenericParam(token));
+
+        //use built in flow for issuing tokens on ledger
+        return subFlow(new IssueTokens(ImmutableList.of(fungibleToken)));
     }
 }

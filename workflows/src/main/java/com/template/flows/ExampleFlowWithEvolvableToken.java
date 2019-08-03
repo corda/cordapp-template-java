@@ -2,9 +2,11 @@ package com.template.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableList;
-import com.r3.corda.lib.tokens.contracts.states.EvolvableTokenType;
+import com.r3.corda.lib.tokens.contracts.states.NonFungibleToken;
+import com.r3.corda.lib.tokens.contracts.types.IssuedTokenType;
 import com.r3.corda.lib.tokens.contracts.types.TokenPointer;
-import com.r3.corda.lib.tokens.workflows.flows.evolvable.CreateEvolvableToken;
+import com.r3.corda.lib.tokens.contracts.utilities.TransactionUtilitiesKt;
+import com.r3.corda.lib.tokens.workflows.flows.rpc.CreateEvolvableTokens;
 import com.r3.corda.lib.tokens.workflows.flows.rpc.IssueTokens;
 import com.template.states.ExampleEvolvableTokenType;
 import net.corda.core.contracts.*;
@@ -24,33 +26,45 @@ public class ExampleFlowWithEvolvableToken {
     }
 
     /**
-     *  You can create a Fungible/NonFungible token(digital asset) representing an existing evolvableTokenType which we created
-     *  in the CreateEvolvableTokenFlow below.
+     *  Issue Non Fungible Token using IssueTokens flow
      */
     @StartableByRPC
     public static class IssueEvolvableTokenFlow extends FlowLogic<SignedTransaction>{
         private final String evolvableTokenId;
-        private final Long amount;
         private final Party recipient;
 
-        public IssueEvolvableTokenFlow(String evolvableTokenId, Long amount, Party recipient) {
+        public IssueEvolvableTokenFlow(String evolvableTokenId, Party recipient) {
             this.evolvableTokenId = evolvableTokenId;
-            this.amount = amount;
             this.recipient = recipient;
         }
 
         @Override
         @Suspendable
         public SignedTransaction call() throws FlowException {
+            //using id of evolvable token type to grab the evolvable Token type from db.
+            // you can use any custom criteria depending on your requirements
             UUID uuid = UUID.fromString(evolvableTokenId);
+
+            //construct the query criteria
             QueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria(null, ImmutableList.of(uuid), null,
-                    Vault.StateStatus.UNCONSUMED, null);
-            StateAndRef<EvolvableTokenType> stateAndRef = getServiceHub().getVaultService().
-                    queryBy(EvolvableTokenType.class, queryCriteria).getStates().get(0);
-            EvolvableTokenType evolvableTokenType = stateAndRef.getState().getData();
-            LinearPointer linearPointer = new LinearPointer(evolvableTokenType.getLinearId(), EvolvableTokenType.class);
-            TokenPointer token = new TokenPointer(linearPointer, evolvableTokenType.getFractionDigits());
-            return (SignedTransaction) subFlow(new IssueTokens(new Amount(amount, token), this.getOurIdentity(), recipient));
+                    Vault.StateStatus.UNCONSUMED);
+
+            // grab the token type off the ledger which was created using CreateEvolvableTokens flow
+            StateAndRef<ExampleEvolvableTokenType> stateAndRef = getServiceHub().getVaultService().
+                    queryBy(ExampleEvolvableTokenType.class, queryCriteria).getStates().get(0);
+            ExampleEvolvableTokenType evolvableTokenType = stateAndRef.getState().getData();
+
+            //get the pointer pointer to the evolvable token type
+            TokenPointer tokenPointer = evolvableTokenType.toPointer(evolvableTokenType.getClass());
+
+            //assign the issuer to the token type who will be issuing the tokens
+            IssuedTokenType issuedTokenType = new IssuedTokenType(getOurIdentity(), tokenPointer);
+
+            //mention the current holder also
+            NonFungibleToken nonFungibleToken = new NonFungibleToken(issuedTokenType, recipient, new UniqueIdentifier(), TransactionUtilitiesKt.getAttachmentIdForGenericParam(tokenPointer));
+
+            //call built in flow to issue non fungible tokens
+            return subFlow(new IssueTokens(ImmutableList.of(nonFungibleToken)));
         }
     }
 
@@ -62,20 +76,27 @@ public class ExampleFlowWithEvolvableToken {
     @StartableByRPC
     public static class CreateEvolvableTokenFlow extends FlowLogic<SignedTransaction> {
 
-        private final String data;
+        private final String importantInformationThatMayChange;
 
-        public CreateEvolvableTokenFlow(String data) {
-            this.data = data;
+        public CreateEvolvableTokenFlow(String importantInformationThatMayChange) {
+            this.importantInformationThatMayChange = importantInformationThatMayChange;
         }
 
         @Override
         @Suspendable
         public SignedTransaction call() throws FlowException {
+            //grab the notary
             Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
-            EvolvableTokenType evolvableTokenType = new ExampleEvolvableTokenType(data, getOurIdentity(),
+
+            //create token type
+            ExampleEvolvableTokenType evolvableTokenType = new ExampleEvolvableTokenType(importantInformationThatMayChange, getOurIdentity(),
                     new UniqueIdentifier(), 0);
+
+            //warp it with transaction state specifying the notary
             TransactionState transactionState = new TransactionState(evolvableTokenType, notary);
-            return (SignedTransaction) subFlow(new CreateEvolvableToken(transactionState));
+
+            //call built in sub flow CreateEvolvableTokens. This can be called via rpc or in unit testing
+            return subFlow(new CreateEvolvableTokens(transactionState));
         }
     }
 }

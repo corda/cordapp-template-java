@@ -1,142 +1,132 @@
 <p align="center">
-  <img src="https://www.corda.net/wp-content/uploads/2016/11/fg005_corda_b.png" alt="Corda" width="500">
+    <img src="https://www.corda.net/wp-content/uploads/2016/11/fg005_corda_b.png" alt="Corda" width="500">
 </p>
 
-# CorDapp Template - Java
+# Corda Token SDK
 
-Welcome to the Java CorDapp template. The CorDapp template is a stubbed-out CorDapp that you can use to bootstrap 
-your own CorDapps.
+## Reminder
 
-**This is the Java version of the CorDapp template. The Kotlin equivalent is 
-[here](https://github.com/corda/cordapp-template-kotlin/).**
+This project is open source under an Apache 2.0 licence. That means you
+can submit PRs to fix bugs and add new features if they are not currently
+available.
 
-# Pre-Requisites
+## What is the token SDK?
 
-See https://docs.corda.net/getting-set-up.html.
+The tokens SDK exists to make it easy for CorDapp developers to create
+CorDapps which use tokens. Functionality is provided to create token types,
+then issue, move and redeem tokens of a particular type.
 
-# Usage
+The tokens SDK comprises three CorDapp JARs:
 
-## Running tests inside IntelliJ
-	
-We recommend editing your IntelliJ preferences so that you use the Gradle runner - this means that the quasar utils
-plugin will make sure that some flags (like ``-javaagent`` - see below) are
-set for you.
+1. Contracts which contains the base types, states and contracts
+2. Workflows which contains flows for issuing, moving and redeeming tokens
+   as well as utilities for the above operations.
+3. Money which contains token type definitions for various currencies
 
-To switch to using the Gradle runner:
+The token SDK is intended to replace the "finance module" from the core
+Corda repository.
 
-* Navigate to ``Build, Execution, Deployment -> Build Tools -> Gradle -> Runner`` (or search for `runner`)
-  * Windows: this is in "Settings"
-  * MacOS: this is in "Preferences"
-* Set "Delegate IDE build/run actions to gradle" to true
-* Set "Run test using:" to "Gradle Test Runner"
+For more details behind the token SDK's design, see
+[here](design/design.md).
 
-If you would prefer to use the built in IntelliJ JUnit test runner, you can run ``gradlew installQuasar`` which will
-copy your quasar JAR file to the lib directory. You will then need to specify ``-javaagent:lib/quasar.jar``
-and set the run directory to the project root directory for each test.
+## How to use the SDK?
 
-## Running the nodes
+### Using the tokens template.
 
-See https://docs.corda.net/tutorial-cordapp.html#running-the-example-cordapp.
+By far the easiest way to get started with the tokens SDK is to use the
+`tokens-template` which is a branch on the java version of the "CorDapp
+template". You can obtain it with the following commands:
 
-## Interacting with the nodes
+    git clone http://github.com/corda/cordapp-template-kotlin
+    cd cordapp-template-java
+    git checkout token-template
 
-### Shell
+Once you have cloned the repository, you should open it with IntelliJ. This
+will give you a template repo with the token SDK dependencies already
+included and some example code which should illustrate you how to use token SDK.
+You can `deployNodes` to create three nodes:
 
-When started via the command line, each node will display an interactive shell:
+    ./gradlew clean deployNodes
+    ./build/nodes/runnodes
 
-    Welcome to the Corda interactive shell.
-    Useful commands include 'help' to see what is available, and 'bye' to shut down the node.
-    
-    Tue Nov 06 11:58:13 GMT 2018>>>
+You can issue some currency tokens from `PartyA` to `PartyB` from Party A's
+shell with the following command:
 
-You can use this shell to interact with your node. For example, enter `run networkMapSnapshot` to see a list of 
-the other nodes on the network:
+    start ExampleFlowWithFixedToken currency: GBP, quantity: 100, recipient: PartyB
 
-    Tue Nov 06 11:58:13 GMT 2018>>> run networkMapSnapshot
-    [
-      {
-      "addresses" : [ "localhost:10002" ],
-      "legalIdentitiesAndCerts" : [ "O=Notary, L=London, C=GB" ],
-      "platformVersion" : 3,
-      "serial" : 1541505484825
-    },
-      {
-      "addresses" : [ "localhost:10005" ],
-      "legalIdentitiesAndCerts" : [ "O=PartyA, L=London, C=GB" ],
-      "platformVersion" : 3,
-      "serial" : 1541505382560
-    },
-      {
-      "addresses" : [ "localhost:10008" ],
-      "legalIdentitiesAndCerts" : [ "O=PartyB, L=New York, C=US" ],
-      "platformVersion" : 3,
-      "serial" : 1541505384742
+Create evolvable token type on the ledger on PartyA's terminal
+
+    start CreateEvolvableTokenFlow importantInformationThatMayChange : random
+
+This will create a linear state of type ExampleEvolvableTokenType in A's vault
+
+Get the uuid of the ExampleEvolvableTokenType from PartyA's terminal by hitting below command.
+
+    run vaultQuery contractStateType : com.template.states.ExampleEvolvableTokenType
+
+Issue tokens off the created ExampleEvolvableTokenType from PartyA s terminal to PartyB
+
+    start IssueEvolvableTokenFlow evolvableTokenId : 79332247-61d2-4d00-bb1f-d62416cf4920 , recipient : PartyB
+
+
+See the token template code [here](https://github.com/corda/cordapp-template-java/tree/token-template)
+for more information.
+
+### Adding token SDK dependencies to an existing CorDapp
+
+First, add a variable for the tokens SDK version you wish to use:
+
+    buildscript {
+        ext {
+            tokens_release_version = '1.1-SNAPSHOT'
+            tokens_release_group = 'com.r3.corda.lib.tokens'
+        }
     }
-    ]
-    
-    Tue Nov 06 12:30:11 GMT 2018>>> 
 
-You can find out more about the node shell [here](https://docs.corda.net/shell.html).
+Second, you must add the tokens development artifactory repository to the
+list of repositories for your project:
 
-### Client
+    repositories {
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
+    }
 
-`clients/src/main/java/com/template/Client.java` defines a simple command-line client that connects to a node via RPC 
-and prints a list of the other nodes on the network.
+Now, you can add the tokens SDK dependencies to the `dependencies` block
+in each module of your CorDapp. For contract modules add:
 
-#### Running the client
+    cordaCompile "$tokens_release_group:tokens-contracts:$tokens_release_version"
 
-##### Via the command line
+In your workflow `build.gradle` add:
 
-Run the `runTemplateClient` Gradle task. By default, it connects to the node with RPC address `localhost:10006` with 
-the username `user1` and the password `test`.
+    cordaCompile "$tokens_release_group:tokens-workflows:$tokens_release_version"
 
-##### Via IntelliJ
+For `FiatCurrency` and `DigitalCurrency` definitions add:
 
-Run the `Run Template Client` run configuration. By default, it connects to the node with RPC address `localhost:10006` 
-with the username `user1` and the password `test`.
+    cordaCompile "$tokens_release_group:tokens-money:$tokens_release_version"
 
-### Webserver
+If you want to use the `deployNodes` task, you will need to add the
+following dependencies to your root `build.gradle` file:
 
-`clients/src/main/java/com/template/webserver/` defines a simple Spring webserver that connects to a node via RPC and 
-allows you to interact with the node over HTTP.
+    cordapp "$tokens_release_group:tokens-contracts:$tokens_release_version"
+    cordapp "$tokens_release_group:tokens-workflows:$tokens_release_version"
+    cordapp "$tokens_release_group:tokens-money:$tokens_release_version"
 
-The API endpoints are defined here:
+These should also be added to the `deployNodes` task with the following syntax:
 
-     clients/src/main/java/com/template/webserver/Controller.java
+    nodeDefaults {
+        projectCordapp {
+            deploy = false
+        }
+        cordapp("$tokens_release_group:tokens-contracts:$tokens_release_version")
+        cordapp("$tokens_release_group:tokens-workflows:$tokens_release_version")
+        cordapp("$tokens_release_group:tokens-money:$tokens_release_version")
+    }
 
-And a static webpage is defined here:
+### Installing the token SDK binaries
 
-     clients/src/main/resources/static/
+If you wish to build the token SDK from source then do the following to
+publish binaries to your local maven repository:
 
-#### Running the webserver
-
-##### Via the command line
-
-Run the `runTemplateServer` Gradle task. By default, it connects to the node with RPC address `localhost:10006` with 
-the username `user1` and the password `test`, and serves the webserver on port `localhost:10050`.
-
-##### Via IntelliJ
-
-Run the `Run Template Server` run configuration. By default, it connects to the node with RPC address `localhost:10006` 
-with the username `user1` and the password `test`, and serves the webserver on port `localhost:10050`.
-
-#### Interacting with the webserver
-
-The static webpage is served on:
-
-    http://localhost:10050
-
-While the sole template endpoint is served on:
-
-    http://localhost:10050/templateendpoint
-    
-# Extending the template
-
-You should extend this template as follows:
-
-* Add your own state and contract definitions under `contracts/src/main/java/`
-* Add your own flow definitions under `workflows/src/main/java/`
-* Extend or replace the client and webserver under `clients/src/main/java/`
-
-For a guided example of how to extend this template, see the Hello, World! tutorial 
-[here](https://docs.corda.net/hello-world-introduction.html).
+    git clone http://github.com/corda/token-sdk
+    cd token-sdk
+    ./gradlew clean install
