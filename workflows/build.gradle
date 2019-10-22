@@ -15,6 +15,10 @@ cordapp {
 
 sourceSets {
     main {
+        java {
+            srcDir 'src/main/java'
+            java.outputDir = file('bin/main')
+        }
         resources {
             srcDir rootProject.file("config/dev")
         }

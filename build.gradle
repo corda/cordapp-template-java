@@ -63,20 +63,15 @@ cordapp {
     }
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters" // Required for shell commands.
+}
+
+
 sourceSets {
     main {
-        java {
-            srcDir 'src/main/java'
-            java.outputDir = file('bin/main')
-        }
         resources {
             srcDir rootProject.file("config/dev")
-        }
-    }
-    test{
-        java {
-            srcDir 'src/main/test'
-            java.outputDir = file('bin/test')
         }
     }
 }
