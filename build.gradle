@@ -63,11 +63,6 @@ cordapp {
     }
 }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-parameters" // Required for shell commands.
-}
-
-
 sourceSets {
     main {
         resources {

@@ -19,6 +19,12 @@ sourceSets {
             java.outputDir = file('bin/main')
         }
     }
+    test{
+        java{
+            srcDir 'src/test/java'
+            java.outputDir = file('bin/test')
+        }
+    }
 }
 
 dependencies {
