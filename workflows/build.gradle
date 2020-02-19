@@ -19,17 +19,11 @@ sourceSets {
             srcDir 'src/main/java'
             java.outputDir = file('bin/main')
         }
-        resources {
-            srcDir rootProject.file("config/dev")
-        }
     }
     test {
         java {
             srcDir 'src/test/java'
             java.outputDir = file('bin/main')
-        }
-        resources {
-            srcDir rootProject.file("config/test")
         }
     }
     integrationTest {
