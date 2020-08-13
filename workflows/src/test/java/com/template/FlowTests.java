@@ -11,20 +11,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class FlowTests {
-    private final MockNetwork network = new MockNetwork(new MockNetworkParameters(ImmutableList.of(
-        TestCordapp.findCordapp("com.template.contracts"),
-        TestCordapp.findCordapp("com.template.flows")
-    )));
-    private final StartedMockNode a = network.createNode();
-    private final StartedMockNode b = network.createNode();
-
-    public FlowTests() {
-        a.registerInitiatedFlow(Responder.class);
-        b.registerInitiatedFlow(Responder.class);
-    }
+    private MockNetwork network;
+    private StartedMockNode a;
+    private StartedMockNode b;
 
     @Before
     public void setup() {
+        network = new MockNetwork(new MockNetworkParameters().withCordappsForAllNodes(ImmutableList.of(
+                TestCordapp.findCordapp("com.example.contract"),
+                TestCordapp.findCordapp("com.example.flow"))));
+        a = network.createPartyNode(null);
+        b = network.createPartyNode(null);
+        // For real nodes this happens automatically, but we have to manually register the flow for tests.
+        for (StartedMockNode node : ImmutableList.of(a, b)) {
+            node.registerInitiatedFlow(Responder.class);
+        }
         network.runNetwork();
     }
 
