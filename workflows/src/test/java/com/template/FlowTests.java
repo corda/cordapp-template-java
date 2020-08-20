@@ -18,8 +18,8 @@ public class FlowTests {
     @Before
     public void setup() {
         network = new MockNetwork(new MockNetworkParameters().withCordappsForAllNodes(ImmutableList.of(
-                TestCordapp.findCordapp("com.example.contract"),
-                TestCordapp.findCordapp("com.example.flow"))));
+                TestCordapp.findCordapp("com.template.contracts"),
+                TestCordapp.findCordapp("com.template.flows"))));
         a = network.createPartyNode(null);
         b = network.createPartyNode(null);
         // For real nodes this happens automatically, but we have to manually register the flow for tests.
