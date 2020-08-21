@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Template Client" type="Application" factoryName="Application" singleton="true">
     <option name="MAIN_CLASS_NAME" value="com.template.Client" />
-    <module name="com.template.clients.main" />
+    <module name="cordapp-template-java.clients.main" />
     <option name="PROGRAM_PARAMETERS" value="localhost:10006 user1 test" />
     <method v="2">
       <option name="Make" enabled="true" />

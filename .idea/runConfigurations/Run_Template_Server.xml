@@ -8,7 +8,7 @@
       <env name="config.rpc.password" value="test" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.template.webserver.Starter" />
-    <module name="com.template.clients.main" />
+    <module name="cordapp-template-java.clients.main" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.template.webserver.*" />
