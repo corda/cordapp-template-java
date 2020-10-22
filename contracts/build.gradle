@@ -1,5 +1,9 @@
+import static org.gradle.api.JavaVersion.VERSION_1_8
 apply plugin: 'net.corda.plugins.cordapp'
 apply plugin: 'net.corda.plugins.cordformation'
+
+targetCompatibility = VERSION_1_8
+sourceCompatibility = VERSION_1_8
 
 cordapp {
     targetPlatformVersion corda_platform_version
