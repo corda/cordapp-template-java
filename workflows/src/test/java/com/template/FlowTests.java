@@ -1,8 +1,7 @@
 package com.template;
 
 import com.google.common.collect.ImmutableList;
-import com.template.flows.Initiator;
-import com.template.flows.Responder;
+import com.template.flows.TemplateFlow;
 import com.template.states.TemplateState;
 import net.corda.core.node.services.Vault;
 import net.corda.core.node.services.vault.QueryCriteria;
@@ -39,7 +38,7 @@ public class FlowTests {
 
     @Test
     public void dummyTest() {
-        Initiator flow = new Initiator(b.getInfo().getLegalIdentities().get(0));
+        TemplateFlow.TemplateFlowInitiator flow = new TemplateFlow.TemplateFlowInitiator(b.getInfo().getLegalIdentities().get(0));
         Future<SignedTransaction> future = a.startFlow(flow);
         network.runNetwork();
 
