@@ -27,7 +27,6 @@ dependencies {
     // Token SDK dependencies.
     compile "$tokens_release_group:tokens-contracts:$tokens_release_version"
     compile "$tokens_release_group:tokens-workflows:$tokens_release_version"
-    compile "$tokens_release_group:tokens-money:$tokens_money_release_version"
 }
 
 springBoot {

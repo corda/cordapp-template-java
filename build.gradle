@@ -4,7 +4,6 @@ buildscript {
         corda_release_version = '4.8'
         tokens_release_group = 'com.r3.corda.lib.tokens'
         tokens_release_version = '1.2'
-        tokens_money_release_version = '1.1'
         corda_gradle_plugins_version = '4.0.42'
         junit_version = '4.12'
         quasar_version = '0.7.10'
@@ -98,7 +97,6 @@ dependencies {
     // Token SDK dependencies.
     cordapp "$tokens_release_group:tokens-contracts:$tokens_release_version"
     cordapp "$tokens_release_group:tokens-workflows:$tokens_release_version"
-    cordapp "$tokens_release_group:tokens-money:$tokens_money_release_version"
 }
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
@@ -108,7 +106,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
         cordapp("$tokens_release_group:tokens-contracts:$tokens_release_version")
         cordapp("$tokens_release_group:tokens-workflows:$tokens_release_version")
-        cordapp("$tokens_release_group:tokens-money:$tokens_money_release_version")
         cordapp project(':contracts')
         cordapp project(':workflows')
     }
@@ -121,6 +118,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             adminAddress("localhost:10043")
         }
         cordapps = []
+
     }
     node {
         name "O=PartyA,L=London,C=GB"
