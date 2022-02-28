@@ -4,6 +4,7 @@ import co.paralleluniverse.fibers.Suspendable;
 import com.template.contracts.TemplateContract;
 import com.template.states.TemplateState;
 import net.corda.core.flows.*;
+import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
@@ -35,8 +36,8 @@ public class TemplateFlow {
             this.sender = getOurIdentity();
 
             // Step 1. Get a reference to the notary service on our network and our key pair.
-            // Note: ongoing work to support multiple notary identities is still in progress.
-            final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
+            /** Explicit selection of notary by CordaX500Name - argument can by coded in flows or parsed from config (Preferred)*/
+            final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB"));
 
             //Compose the State that carries the Hello World message
             final TemplateState output = new TemplateState(msg,sender,receiver);
