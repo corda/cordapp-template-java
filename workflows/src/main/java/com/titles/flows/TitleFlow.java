@@ -1,8 +1,8 @@
-package com.template.flows;
+package com.titles.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.template.contracts.TemplateContract;
-import com.template.states.TemplateState;
+import com.titles.contracts.TitleContract;
+import com.titles.states.TitleState;
 import net.corda.core.flows.*;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
@@ -13,19 +13,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TemplateFlow {
+public class TitleFlow {
 
     @InitiatingFlow
     @StartableByRPC
-    public static class TemplateFlowInitiator extends FlowLogic<SignedTransaction>{
+    public static class TitleFlowInitiator extends FlowLogic<SignedTransaction>{
 
         //private variables
-        private Party sender ;
+        private Party sender;
         private Party receiver;
+        private TitleState titleState;
 
         //public constructor
-        public TemplateFlowInitiator(Party receiver) {
-            this.receiver = receiver;
+        public TitleFlowInitiator(Party owner, Party county, String address, String parcelId) {
+            this.titleState = new TitleState(owner, county, address, parcelId);
+            this.sender = county;
+            this.receiver = owner;
         }
 
         @Override
@@ -39,15 +42,12 @@ public class TemplateFlow {
             /** Explicit selection of notary by CordaX500Name - argument can by coded in flows or parsed from config (Preferred)*/
             final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB"));
 
-            //Compose the State that carries the Hello World message
-            final TemplateState output = new TemplateState(msg,sender,receiver);
-
             // Step 3. Create a new TransactionBuilder object.
             final TransactionBuilder builder = new TransactionBuilder(notary);
 
             // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-            builder.addOutputState(output);
-            builder.addCommand(new TemplateContract.Commands.Send(), Arrays.asList(this.sender.getOwningKey(),this.receiver.getOwningKey()) );
+            builder.addOutputState(titleState);
+            builder.addCommand(new TitleContract.Commands.Issue(), Arrays.asList(this.sender.getOwningKey(),this.receiver.getOwningKey()) );
 
 
             // Step 5. Verify and sign it with our KeyPair.
@@ -56,7 +56,7 @@ public class TemplateFlow {
 
 
             // Step 6. Collect the other party's signature using the SignTransactionFlow.
-            List<Party> otherParties = output.getParticipants().stream().map(el -> (Party)el).collect(Collectors.toList());
+            List<Party> otherParties = titleState.getParticipants().stream().map(el -> (Party)el).collect(Collectors.toList());
             otherParties.remove(getOurIdentity());
             List<FlowSession> sessions = otherParties.stream().map(el -> initiateFlow(el)).collect(Collectors.toList());
 
@@ -67,13 +67,13 @@ public class TemplateFlow {
         }
     }
 
-    @InitiatedBy(TemplateFlowInitiator.class)
-    public static class TemplateFlowResponder extends FlowLogic<Void>{
+    @InitiatedBy(TitleFlowInitiator.class)
+    public static class TitleFlowResponder extends FlowLogic<Void>{
         //private variable
         private FlowSession counterpartySession;
 
         //Constructor
-        public TemplateFlowResponder(FlowSession counterpartySession) {
+        public TitleFlowResponder(FlowSession counterpartySession) {
             this.counterpartySession = counterpartySession;
         }
 

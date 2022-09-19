@@ -1,7 +1,6 @@
-package com.template.contracts;
+package com.titles.contracts;
 
-import com.template.states.TemplateState;
-import com.template.states.TitleState;
+import com.titles.states.TitleState;
 import net.corda.core.contracts.CommandData;
 import net.corda.core.contracts.CommandWithParties;
 import net.corda.core.contracts.Contract;
@@ -20,7 +19,7 @@ import static net.corda.core.contracts.ContractsDSL.requireThat;
 // ************
 public class TitleContract implements Contract {
     // This is used to identify our contract when building a transaction.
-    public static final String ID = "com.template.contracts.TitleContract";
+    public static final String ID = "com.titles.contracts.TitleContract";
 
     // A transaction is valid if the verify() function of the contract of all the transaction's input and output states
     // does not throw an exception.
@@ -58,10 +57,15 @@ public class TitleContract implements Contract {
                         tx.getOutputStates().size() == 1);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
-                require.using("County cannot change County on Transfer transaction.",
-                        input.getCounty().equals(output.getCounty()));
                 require.using("Owner has to be different on Transfer transaction.",
                         !input.getOwner().equals(output.getOwner()));
+                require.using("County cannot change on Transfer transaction.",
+                        input.getCounty().equals(output.getCounty()));
+                require.using("Address cannot change on Transfer transaction.",
+                        input.getAddress().equals(output.getAddress()));
+                require.using("parcelId cannot change on Transfer transaction.",
+                        input.getParcelId().equals(output.getParcelId()));
+                // TODO: do I need to check for linearId being same?
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
                         Arrays.asList(
                                 input.getOwner().getOwningKey(),

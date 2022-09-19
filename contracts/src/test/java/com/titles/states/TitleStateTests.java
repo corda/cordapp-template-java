@@ -1,6 +1,5 @@
-package com.contracts;
+package com.titles.states;
 
-import com.template.states.TitleState;
 import net.corda.core.contracts.LinearState;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.identity.Party;
@@ -10,7 +9,7 @@ import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertTrue;
 
-public class StateTests {
+public class TitleStateTests {
 
     //Mock State test check for if the state has correct parameters type
     @Test

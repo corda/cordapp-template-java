@@ -1,7 +1,6 @@
-package com.template.states;
+package com.titles.states;
 
-import com.template.contracts.TemplateContract;
-import com.template.contracts.TitleContract;
+import com.titles.contracts.TitleContract;
 import net.corda.core.contracts.*;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
@@ -10,6 +9,7 @@ import net.corda.core.serialization.ConstructorForDeserialization;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
+import java.util.Objects;
 
 // *********
 // * State *
@@ -47,11 +47,22 @@ public class TitleState implements LinearState {
      * this state is used in a transaction. */
     @Override
     public List<AbstractParty> getParticipants() {
-        return Arrays.asList(owner);
+        return Arrays.asList(owner, county);
     }
     @Override
     public UniqueIdentifier getLinearId() { return linearId;}
     public TitleState withNewOwner(Party newOwner) {
         return new TitleState(newOwner, county, address, parcelId, linearId);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TitleState titleState = (TitleState) o;
+        return Objects.equals(owner, titleState.owner) &&
+                Objects.equals(county, titleState.county) &&
+                Objects.equals(address, titleState.address) &&
+                Objects.equals(parcelId, titleState.parcelId) &&
+                Objects.equals(linearId, titleState.linearId);
     }
 }
