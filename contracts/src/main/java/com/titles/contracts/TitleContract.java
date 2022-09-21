@@ -63,8 +63,10 @@ public class TitleContract implements Contract {
                         input.getCounty().equals(output.getCounty()));
                 require.using("Address cannot change on Transfer transaction.",
                         input.getAddress().equals(output.getAddress()));
-                require.using("parcelId cannot change on Transfer transaction.",
+                require.using("ParcelId cannot change on Transfer transaction.",
                         input.getParcelId().equals(output.getParcelId()));
+                require.using("LinearId cannot change on Transfer transaction.",
+                        input.getLinearId().equals(output.getLinearId()));
                 // TODO: do I need to check for linearId being same?
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
                         Arrays.asList(
@@ -123,7 +125,6 @@ public class TitleContract implements Contract {
 
     // Used to indicate the transaction's intent.
     public interface Commands extends CommandData {
-        //In our hello-world app, We will only have one command.
         class Issue implements Commands {}
         class Transfer implements Commands {}
         class Retire implements Commands {}

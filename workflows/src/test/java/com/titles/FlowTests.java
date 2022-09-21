@@ -1,7 +1,7 @@
-package com.template;
+package com.titles;
 
 import com.google.common.collect.ImmutableList;
-import com.titles.flows.TitleFlow;
+import com.titles.flows.TitleIssueFlow;
 import com.titles.states.TitleState;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.node.services.Vault;
@@ -36,8 +36,8 @@ public class FlowTests {
     }
 
     @Test
-    public void dummyTest() {
-        TitleFlow.TitleFlowInitiator flow = new TitleFlow.TitleFlowInitiator(
+    public void dummyTest() throws Exception {
+        TitleIssueFlow.TitleFlowInitiator flow = new TitleIssueFlow.TitleFlowInitiator(
                 a.getInfo().getLegalIdentities().get(0),
                 b.getInfo().getLegalIdentities().get(0),
                 "1234567890", "parcelId");
@@ -45,8 +45,8 @@ public class FlowTests {
         network.runNetwork();
 
         //successful query means the state is stored at node b's vault. Flow went through.
-//        QueryCriteria inputCriteria = new QueryCriteria.VaultQueryCriteria().withStatus(Vault.StateStatus.UNCONSUMED);
-//        TitleState state = a.getServices().getVaultService().queryBy(TitleState.class,inputCriteria)
+//        QueryCriteria.VaultQueryCriteria inputCriteria = new QueryCriteria.VaultQueryCriteria().withStatus(Vault.StateStatus.UNCONSUMED);
+//        TitleState state = a.getServices().getVaultService().queryBy(TitleState.class, inputCriteria)
 //                .getStates().get(0).getState().getData();
     }
 }
