@@ -103,6 +103,11 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         runSchemaMigration = true //This configuration is for any CorDapps with custom schema, We will leave this as true to avoid
         //problems for developers who are not familiar with Corda. If you are not using custom schemas, you can change
         //it to false for quicker project compiling time.
+        extraConfig = [
+            h2Settings: [
+                address : 'localhost:0' // A random port will be selected.
+            ]
+        ]
     }
     node {
         name "O=Notary,L=London,C=GB"
@@ -114,7 +119,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
     }
     node {
-        name "O=PartyA,L=London,C=GB"
+        name "O=Alice,L=NYC,C=US"
         p2pPort 10005
         rpcSettings {
             address("localhost:10006")
@@ -123,11 +128,20 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
     node {
-        name "O=PartyB,L=New York,C=US"
+        name "O=Bob,L=NYC,C=US"
         p2pPort 10008
         rpcSettings {
             address("localhost:10009")
             adminAddress("localhost:10049")
+        }
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=County,L=NYC,C=US"
+        p2pPort 10011
+        rpcSettings {
+            address("localhost:10012")
+            adminAddress("localhost:10052")
         }
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
