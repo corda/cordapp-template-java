@@ -89,7 +89,7 @@ public class FlowTests {
         network.runNetwork();
         TitleState transferedState = b.getServices().getVaultService().queryBy(TitleState.class)
                 .getStates().get(0).getState().getData();
-        assertNotNull(state); // we have a state?
+        assertNotNull(transferedState); // we have a state?
 
         // county and owner correct?
         assertEquals(transferedState.getCounty(), county.getInfo().getLegalIdentities().get(0));
@@ -99,5 +99,9 @@ public class FlowTests {
 
         // TODO: how to check that Alice had her state consumed?
         System.out.println(88);
+
+        TitleState aliceState = a.getServices().getVaultService().queryBy(TitleState.class)
+                .getStates().get(0).getState().getData();
+        System.out.println(99);
     }
 }

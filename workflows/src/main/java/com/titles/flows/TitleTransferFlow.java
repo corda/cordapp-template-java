@@ -98,8 +98,11 @@ public class TitleTransferFlow {
             // get others sigs
             progressTracker.setCurrentStep(GATHERING_SIGS);
             List<Party> otherParties = Arrays.asList(input.getOwner(), input.getCounty(), output.getOwner());
-            otherParties.remove(getOurIdentity());
-            List<FlowSession> sessions = otherParties.stream().map(el -> initiateFlow(el)).collect(Collectors.toList());
+//            Party me = getOurIdentity();
+//            otherParties.remove(getOurIdentity());
+            List<FlowSession> sessions = otherParties.stream().filter(party -> !party.equals(getOurIdentity())).map(party ->
+                    initiateFlow(party)).collect(Collectors.toList());
+//            List<FlowSession> sessions = otherParties.stream().map(el -> initiateFlow(el)).collect(Collectors.toList());
             // TODO: ask why FinalityFlow vs. CollectSignaturesFlow.
             SignedTransaction stx = subFlow(new CollectSignaturesFlow(selfSigned, sessions));
 
