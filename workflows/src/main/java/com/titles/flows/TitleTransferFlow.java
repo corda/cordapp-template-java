@@ -4,6 +4,7 @@ import co.paralleluniverse.fibers.Suspendable;
 import com.titles.contracts.TitleContract;
 import com.titles.states.TitleState;
 import net.corda.core.contracts.Command;
+import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.flows.*;
 import net.corda.core.identity.CordaX500Name;
@@ -12,20 +13,20 @@ import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
+import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TitleIssueFlow {
+public class TitleTransferFlow {
 
     @InitiatingFlow
     @StartableByRPC
     public static class Initiator extends FlowLogic<SignedTransaction>{
 
         //private variables
-        private Party sender;
-        private Party receiver;
-        private TitleState titleState;
+        private Party newOwner;
+        private UniqueIdentifier linearId;
 
         private final ProgressTracker.Step GENERATING_TRANSACTION = new ProgressTracker.Step("Generating transaction based on new IOU.");
         private final ProgressTracker.Step VERIFYING_TRANSACTION = new ProgressTracker.Step("Verifying contract constraints.");
@@ -54,61 +55,67 @@ public class TitleIssueFlow {
         }
 
         //public constructor
-        public Initiator(Party owner, Party county, String address, String parcelId) throws FlowException {
-            this.titleState = new TitleState(owner, county, address, parcelId);
-            this.sender = county;
-            this.receiver = owner;
+        public Initiator(Party newOwner, UniqueIdentifier linearId) throws FlowException {
+            this.newOwner = newOwner;
+            this.linearId = linearId;
         }
 
         @Override
         @Suspendable
         public SignedTransaction call() throws FlowException {
-
-            // Step 1. Get a reference to the notary service on our network and our key pair.
-            /** Explicit selection of notary by CordaX500Name - argument can by coded in flows or parsed from config (Preferred)*/
-            final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB"));
             progressTracker.setCurrentStep(GENERATING_TRANSACTION);
-            this.sender = getOurIdentity();
+            // get input based on linearId referenced
+            //TODO: should this be in constructor?
+            List<StateAndRef<TitleState>> titleStateAndRefs = getServiceHub().getVaultService()
+                    .queryBy(TitleState.class).getStates();
+            StateAndRef<TitleState> inputStateAndRef = titleStateAndRefs.stream().filter(titleStateAndRef -> {
+                TitleState state = titleStateAndRef.getState().getData();
+                return state.getLinearId().equals(linearId);
+            }).findAny().orElseThrow(() -> new IllegalArgumentException("Title not found."));
 
-            // Step 3. Create a new TransactionBuilder object.
-            final TransactionBuilder builder = new TransactionBuilder(notary);
-            final Command<TitleContract.Commands.Issue> txCommand = new Command<>(
-                    new TitleContract.Commands.Issue(),
-                    Arrays.asList(sender.getOwningKey(), receiver.getOwningKey()));
+            TitleState input = inputStateAndRef.getState().getData();
 
-            // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-            builder.addOutputState(titleState, TitleContract.ID);
-            builder.addCommand(txCommand);
+            TitleState output = input.withNewOwner(newOwner);
 
-            // Step 5. Verify and sign it with our KeyPair.
+            List<PublicKey> signers = Arrays.asList(
+                    input.getOwner().getOwningKey(),
+                    input.getCounty().getOwningKey(),
+                    output.getOwner().getOwningKey()
+            );
+            // build tx
+            TransactionBuilder builder = new TransactionBuilder(inputStateAndRef.getState().getNotary())
+                    .addInputState(inputStateAndRef)
+                    .addOutputState(output)
+                    .addCommand(new TitleContract.Commands.Transfer(), signers);
+            // verify tx
             progressTracker.setCurrentStep(VERIFYING_TRANSACTION);
             builder.verify(getServiceHub());
 
+            // sign tx
             progressTracker.setCurrentStep(SIGNING_TRANSACTION);
-            final SignedTransaction partSignedTx = getServiceHub().signInitialTransaction(builder);
+            SignedTransaction selfSigned = getServiceHub().signInitialTransaction(builder);
 
-
-            // Step 6. Collect the other party's signature using the SignTransactionFlow.
+            // get others sigs
             progressTracker.setCurrentStep(GATHERING_SIGS);
-            List<Party> otherParties = titleState.getParticipants().stream().map(el -> (Party)el).collect(Collectors.toList());
+            List<Party> otherParties = Arrays.asList(input.getOwner(), input.getCounty(), output.getOwner());
             otherParties.remove(getOurIdentity());
             List<FlowSession> sessions = otherParties.stream().map(el -> initiateFlow(el)).collect(Collectors.toList());
+            // TODO: ask why FinalityFlow vs. CollectSignaturesFlow.
+            SignedTransaction stx = subFlow(new CollectSignaturesFlow(selfSigned, sessions));
 
-            SignedTransaction stx = subFlow(new CollectSignaturesFlow(partSignedTx, sessions));
-
-            // Step 7. Assuming no exceptions, we can now finalise the transaction
+            // finalize
             progressTracker.setCurrentStep(FINALISING_TRANSACTION);
             return subFlow(new FinalityFlow(stx, sessions));
         }
     }
 
     @InitiatedBy(Initiator.class)
-    public static class IssueFlowResponder extends FlowLogic<Void>{
+    public static class TransferFlowResponder extends FlowLogic<Void>{
         //private variable
         private FlowSession counterpartySession;
 
         //Constructor
-        public IssueFlowResponder(FlowSession counterpartySession) {
+        public TransferFlowResponder(FlowSession counterpartySession) {
             this.counterpartySession = counterpartySession;
         }
 
