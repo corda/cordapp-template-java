@@ -6,7 +6,6 @@ import net.corda.testing.core.TestIdentity;
 import net.corda.testing.node.MockServices;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static net.corda.testing.node.NodeTestUtils.ledger;
@@ -19,7 +18,7 @@ public class TitleIssueTests {
     TestIdentity county = new TestIdentity(new CordaX500Name("County",  "Brooklyn",  "US"));
 
     @Test
-    public void issueCommandFailWithInput() {
+    public void issueCommandTest() {
         TitleState state = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
@@ -28,7 +27,22 @@ public class TitleIssueTests {
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Issue());
-                return tx.fails(); //fails because of having inputs
+                return tx.failsWith("There must be no inputs on Issue Command");
+            });
+            l.transaction(tx -> {
+                tx.output(TitleContract.ID, state);
+                tx.output(TitleContract.ID, state);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Issue());
+                return tx.failsWith("There must be one output on Issue Command");
+            });
+            l.transaction(tx -> {
+                tx.output(TitleContract.ID, state);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), bob.getPublicKey()),
+                        new TitleContract.Commands.Issue());
+                return tx.failsWith("Owner and county must sign on Issue Command");
             });
             l.transaction(tx -> {
                 tx.output(TitleContract.ID, state);

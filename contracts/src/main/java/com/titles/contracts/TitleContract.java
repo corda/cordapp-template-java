@@ -33,9 +33,9 @@ public class TitleContract implements Contract {
 
         if (commandData instanceof Commands.Issue) {
             requireThat(require -> {
-                require.using("There must be oo inputs on Issue Command.",
+                require.using("There must be no inputs on Issue Command",
                         tx.getInputStates().size() == 0);
-                require.using("There must be one output on Issue Command.",
+                require.using("There must be one output on Issue Command",
                         tx.getOutputStates().size() == 1);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
@@ -45,28 +45,25 @@ public class TitleContract implements Contract {
                         ));
                 HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
                 require.using(
-                        "Owner and county can only sign Issue transaction.",
+                        "Owner and county must sign on Issue Command",
                         requiredSigners.equals(signerKeys));
                 return null;
             });
         } else if (commandData instanceof Commands.Transfer) {
             requireThat(require -> {
-                require.using("There must be one input on Transfer Command.",
+                require.using("There must be one input on Transfer Command",
                         tx.getInputStates().size() == 1);
-                require.using("There must be one output on Transfer Command.",
+                require.using("There must be one output on Transfer Command",
                         tx.getOutputStates().size() == 1);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
-                require.using("Owner has to be different on Transfer Command.",
+                // output state should be the same as input state except for the owner
+                TitleState compare = input.withNewOwner(output.getOwner());
+                require.using("Owner has to be different on Transfer Command",
                         !input.getOwner().equals(output.getOwner()));
-                require.using("County cannot change on Transfer Command.",
-                        input.getCounty().equals(output.getCounty()));
-                require.using("Address cannot change on Transfer Command.",
-                        input.getAddress().equals(output.getAddress()));
-                require.using("ParcelId cannot change on Transfer Command.",
-                        input.getParcelId().equals(output.getParcelId()));
-                require.using("LinearId cannot change on Transfer Command.",
-                        input.getLinearId().equals(output.getLinearId()));
+                require.using("All attributes (except new owner) must be the same on Transfer Command",
+                        compare.equals(output));
+
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
                         Arrays.asList(
                                 input.getOwner().getOwningKey(),
@@ -75,7 +72,7 @@ public class TitleContract implements Contract {
                         ));
                 HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
                 require.using(
-                        "Old Owner, new Owner, and County must sign Transfer Command.",
+                        "Old Owner, new Owner, and County must sign on Transfer Command.",
                         requiredSigners.equals(signerKeys));
                 return null;
             });
@@ -87,18 +84,14 @@ public class TitleContract implements Contract {
                         tx.getOutputStates().size() == 1);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
-                require.using("Owner has to be different on Repossess Command.",
-                        !input.getOwner().equals(output.getOwner()));
-                require.using("County cannot change on Repossess Command.",
-                        input.getCounty().equals(output.getCounty()));
-                require.using("Address cannot change on Repossess Command.",
-                        input.getAddress().equals(output.getAddress()));
-                require.using("ParcelId cannot change on Repossess Command.",
-                        input.getParcelId().equals(output.getParcelId()));
-                require.using("LinearId cannot change on Repossess Command.",
-                        input.getLinearId().equals(output.getLinearId()));
-                require.using("New owner must be the County in a Repossess Command",
+                // output state should be the same as input state except for the owner is the county
+                TitleState compare = input.withNewOwner(input.getCounty());
+                require.using("Owner is already County, nothing to do on Repossess Command",
+                        !input.getOwner().equals(input.getCounty()));
+                require.using("New owner must be County on Repossess Command",
                         output.getOwner().equals(output.getCounty()));
+                require.using("All attributes (except new owner as county) must be the same on Repossess Command",
+                        compare.equals(output));
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
                         Arrays.asList(
                                 input.getCounty().getOwningKey()
@@ -145,6 +138,9 @@ public class TitleContract implements Contract {
                         tx.getInputStates().size() == 1);
                 require.using("There must be two or more outputs on Split Command.",
                         tx.getOutputStates().size() >= 2);
+                require.using("Parcel IDs must be unique for all outputs on Split Command.",
+                        tx.outputsOfType(TitleState.class).stream().map(TitleState::getParcelId)
+                                .distinct().count() == tx.getOutputStates().size());
                 require.using("Split Command not yet supported.",
                         false);
                 return null;

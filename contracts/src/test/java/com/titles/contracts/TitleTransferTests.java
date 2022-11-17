@@ -31,12 +31,21 @@ public class TitleTransferTests {
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, badNewOwner);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Transfer());
+                // fails due to no new owner
+                return tx.failsWith("Owner has to be different on Transfer Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
                 tx.output(TitleContract.ID, badAddress);
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
                 // fails due to changed address
-                return tx.failsWith("Address cannot change on Transfer transaction.");
+                return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
@@ -45,7 +54,7 @@ public class TitleTransferTests {
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
                 // fails due to changed address
-                return tx.failsWith("ParcelId cannot change on Transfer transaction.");
+                return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
@@ -54,16 +63,7 @@ public class TitleTransferTests {
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
                 // fails due to changed address
-                return tx.failsWith("County cannot change on Transfer transaction.");
-            });
-            l.transaction(tx -> {
-                tx.input(TitleContract.ID, input);
-                tx.output(TitleContract.ID, badNewOwner);
-                tx.command(
-                        Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
-                        new TitleContract.Commands.Transfer());
-                // fails due to no new owner
-                return tx.failsWith("Owner has to be different on Transfer transaction.");
+                return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
@@ -72,7 +72,7 @@ public class TitleTransferTests {
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
                 // fails due to different linearId
-                return tx.failsWith("LinearId cannot change on Transfer transaction.");
+                return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
@@ -81,7 +81,7 @@ public class TitleTransferTests {
                         Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
                 // fails due to missing signer
-                return tx.failsWith("Old Owner, new Owner, and County can only sign Transfer transaction.");
+                return tx.failsWith("Old Owner, new Owner, and County must sign on Transfer Command");
             });
             l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
