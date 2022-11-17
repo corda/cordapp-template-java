@@ -20,7 +20,14 @@ import static net.corda.core.contracts.ContractsDSL.requireThat;
 public class TitleContract implements Contract {
     // This is used to identify our contract when building a transaction.
     public static final String ID = "com.titles.contracts.TitleContract";
-
+    public interface Commands extends CommandData {
+        class Issue implements Commands {}
+        class Transfer implements Commands {}
+        class Repossess implements Commands {}
+        class Retire implements Commands {}
+        class Merge implements Commands {}
+        class Split implements Commands {}
+    }
     // A transaction is valid if the verify() function of the contract of all the transaction's input and output states
     // does not throw an exception.
     @Override
@@ -148,13 +155,4 @@ public class TitleContract implements Contract {
         }
     }
 
-    // Used to indicate the transaction's intent.
-    public interface Commands extends CommandData {
-        class Issue implements Commands {}
-        class Transfer implements Commands {}
-        class Repossess implements Commands {}
-        class Retire implements Commands {}
-        class Merge implements Commands {}
-        class Split implements Commands {}
-    }
 }
