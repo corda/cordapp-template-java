@@ -22,7 +22,6 @@ public class TitleState implements LinearState {
     private String parcelId;
     private final UniqueIdentifier linearId;
 
-    /* Constructor of your Corda state */
     public TitleState(Party owner, Party county, String address, String parcelId) {
         this(owner, county, address, parcelId, new UniqueIdentifier());
     }
@@ -39,9 +38,6 @@ public class TitleState implements LinearState {
     public Party getCounty() { return county; }
     public String getAddress() { return address; }
     public String getParcelId() { return parcelId; }
-//    public String getMsg() { return msg; }
-//    public Party getSender() { return sender; }
-//    public Party getReceiver() { return receiver; }
 
     /* This method will indicate who are the participants and required signers when
      * this state is used in a transaction. */

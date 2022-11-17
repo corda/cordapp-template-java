@@ -33,9 +33,9 @@ public class TitleContract implements Contract {
 
         if (commandData instanceof Commands.Issue) {
             requireThat(require -> {
-                require.using("No inputs should be consumed on Issue transaction.",
+                require.using("There must be oo inputs on Issue Command.",
                         tx.getInputStates().size() == 0);
-                require.using("There should be one output state on Issue transaction.",
+                require.using("There must be one output on Issue Command.",
                         tx.getOutputStates().size() == 1);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
@@ -45,29 +45,28 @@ public class TitleContract implements Contract {
                         ));
                 HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
                 require.using(
-                        "Owner and county can only may sign Issue transaction.",
+                        "Owner and county can only sign Issue transaction.",
                         requiredSigners.equals(signerKeys));
                 return null;
             });
         } else if (commandData instanceof Commands.Transfer) {
             requireThat(require -> {
-                require.using("There should be one input should be consumed on Transfer transaction.",
+                require.using("There must be one input on Transfer Command.",
                         tx.getInputStates().size() == 1);
-                require.using("There should be one output state on Transfer transaction.",
+                require.using("There must be one output on Transfer Command.",
                         tx.getOutputStates().size() == 1);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
-                require.using("Owner has to be different on Transfer transaction.",
+                require.using("Owner has to be different on Transfer Command.",
                         !input.getOwner().equals(output.getOwner()));
-                require.using("County cannot change on Transfer transaction.",
+                require.using("County cannot change on Transfer Command.",
                         input.getCounty().equals(output.getCounty()));
-                require.using("Address cannot change on Transfer transaction.",
+                require.using("Address cannot change on Transfer Command.",
                         input.getAddress().equals(output.getAddress()));
-                require.using("ParcelId cannot change on Transfer transaction.",
+                require.using("ParcelId cannot change on Transfer Command.",
                         input.getParcelId().equals(output.getParcelId()));
-                require.using("LinearId cannot change on Transfer transaction.",
+                require.using("LinearId cannot change on Transfer Command.",
                         input.getLinearId().equals(output.getLinearId()));
-                // TODO: do I need to check for linearId being same?
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
                         Arrays.asList(
                                 input.getOwner().getOwningKey(),
@@ -76,15 +75,45 @@ public class TitleContract implements Contract {
                         ));
                 HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
                 require.using(
-                        "Old Owner, new Owner, and County can only sign Transfer transaction.",
+                        "Old Owner, new Owner, and County must sign Transfer Command.",
+                        requiredSigners.equals(signerKeys));
+                return null;
+            });
+        } else if (commandData instanceof Commands.Repossess) {
+            requireThat(require -> {
+                require.using("There must be one input on Repossess Command.",
+                        tx.getInputStates().size() == 1);
+                require.using("There must be one output on Repossess Command.",
+                        tx.getOutputStates().size() == 1);
+                TitleState input = tx.inputsOfType(TitleState.class).get(0);
+                TitleState output = tx.outputsOfType(TitleState.class).get(0);
+                require.using("Owner has to be different on Repossess Command.",
+                        !input.getOwner().equals(output.getOwner()));
+                require.using("County cannot change on Repossess Command.",
+                        input.getCounty().equals(output.getCounty()));
+                require.using("Address cannot change on Repossess Command.",
+                        input.getAddress().equals(output.getAddress()));
+                require.using("ParcelId cannot change on Repossess Command.",
+                        input.getParcelId().equals(output.getParcelId()));
+                require.using("LinearId cannot change on Repossess Command.",
+                        input.getLinearId().equals(output.getLinearId()));
+                require.using("New owner must be the County in a Repossess Command",
+                        output.getOwner().equals(output.getCounty()));
+                HashSet<PublicKey> requiredSigners = new HashSet<>(
+                        Arrays.asList(
+                                input.getCounty().getOwningKey()
+                        ));
+                HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
+                require.using(
+                        "County can only sign Repossess Command.",
                         requiredSigners.equals(signerKeys));
                 return null;
             });
         } else if (commandData instanceof Commands.Retire) {
             requireThat(require -> {
-                require.using("There should be one input should be consumed on Retire transaction.",
+                require.using("There must be one input on Retire Command.",
                         tx.getInputStates().size() == 1);
-                require.using("There should be no output state on Retire transaction.",
+                require.using("There must be no output on Retire Command.",
                         tx.getOutputStates().size() == 0);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
@@ -101,22 +130,22 @@ public class TitleContract implements Contract {
         } else if (commandData instanceof Commands.Merge) {
             // TODO: Implement Merge command
             requireThat(require -> {
-                require.using("There should be two or more inputs consumed on Merge transaction.",
+                require.using("There must be two or more inputs on Merge Command.",
                         tx.getInputStates().size() >= 2);
-                require.using("There should be one output state on Merge transaction.",
+                require.using("There must be one output state on Merge Command.",
                         tx.getOutputStates().size() == 1);
-                require.using("Merge transaction not yet supported.",
+                require.using("Merge Command not yet supported.",
                         false);
                 return null;
             });
         } else if (commandData instanceof Commands.Split) {
             // TODO: Implement Split command
             requireThat(require -> {
-                require.using("There should be one input on Split transaction.",
+                require.using("There must be one input on Split Command.",
                         tx.getInputStates().size() == 1);
-                require.using("There should be two or more output states on Split transaction.",
+                require.using("There must be two or more outputs on Split Command.",
                         tx.getOutputStates().size() >= 2);
-                require.using("Split transaction not yet supported.",
+                require.using("Split Command not yet supported.",
                         false);
                 return null;
             });
@@ -127,6 +156,7 @@ public class TitleContract implements Contract {
     public interface Commands extends CommandData {
         class Issue implements Commands {}
         class Transfer implements Commands {}
+        class Repossess implements Commands {}
         class Retire implements Commands {}
         class Merge implements Commands {}
         class Split implements Commands {}
