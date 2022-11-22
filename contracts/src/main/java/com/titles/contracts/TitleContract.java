@@ -83,6 +83,24 @@ public class TitleContract implements Contract {
                         requiredSigners.equals(signerKeys));
                 return null;
             });
+        } else if (commandData instanceof Commands.Retire) {
+            requireThat(require -> {
+                require.using("There must be one input on Retire Command",
+                        tx.getInputStates().size() == 1);
+                require.using("There must be no output on Retire Command",
+                        tx.getOutputStates().size() == 0);
+                TitleState input = tx.inputsOfType(TitleState.class).get(0);
+                HashSet<PublicKey> requiredSigners = new HashSet<>(
+                        Arrays.asList(
+                                input.getOwner().getOwningKey(),
+                                input.getCounty().getOwningKey()
+                        ));
+                HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
+                require.using(
+                        "Owner and County must sign on Retire Command",
+                        requiredSigners.equals(signerKeys));
+                return null;
+            });
         } else if (commandData instanceof Commands.Repossess) {
             requireThat(require -> {
                 require.using("There must be one input on Repossess Command.",
@@ -106,24 +124,6 @@ public class TitleContract implements Contract {
                 HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
                 require.using(
                         "County can only sign Repossess Command.",
-                        requiredSigners.equals(signerKeys));
-                return null;
-            });
-        } else if (commandData instanceof Commands.Retire) {
-            requireThat(require -> {
-                require.using("There must be one input on Retire Command",
-                        tx.getInputStates().size() == 1);
-                require.using("There must be no output on Retire Command",
-                        tx.getOutputStates().size() == 0);
-                TitleState input = tx.inputsOfType(TitleState.class).get(0);
-                HashSet<PublicKey> requiredSigners = new HashSet<>(
-                        Arrays.asList(
-                                input.getOwner().getOwningKey(),
-                                input.getCounty().getOwningKey()
-                        ));
-                HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
-                require.using(
-                        "Owner and County must sign on Retire Command",
                         requiredSigners.equals(signerKeys));
                 return null;
             });
