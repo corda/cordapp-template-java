@@ -16,7 +16,7 @@ public class TitleSplitTests {
     TestIdentity alice = new TestIdentity(new CordaX500Name("Alice",  "TestLand",  "US"));
     TestIdentity bob = new TestIdentity(new CordaX500Name("Bob",  "TestLand",  "US"));
     TestIdentity county = new TestIdentity(new CordaX500Name("County",  "Brooklyn",  "US"));
-    TestIdentity countyB = new TestIdentity(new CordaX500Name("County",  "Brooklyn",  "US"));
+    TestIdentity countyB = new TestIdentity(new CordaX500Name("CountyB",  "Brooklyn",  "US"));
 
     @Test
     public void splitCommandTest() {
@@ -26,7 +26,6 @@ public class TitleSplitTests {
         TitleState outputDifferentOwner = new TitleState(bob.getParty(), county.getParty(), "123 Main St B", "123456787");
         TitleState inputDifferentOwner = new TitleState(bob.getParty(), county.getParty(), "123 Main St", "123456789");
         TitleState inputDifferentCounty = new TitleState(alice.getParty(), countyB.getParty(), "123 Main St", "123456789");
-        TitleState outputConflictParcelId = new TitleState(alice.getParty(), county.getParty(), "123 Main St C", "123456789");
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.output(TitleContract.ID, outputA);
@@ -48,7 +47,7 @@ public class TitleSplitTests {
                 tx.input(TitleContract.ID, input);
                 tx.output(TitleContract.ID, outputA);
                 tx.output(TitleContract.ID, outputB);
-                tx.output(TitleContract.ID, outputConflictParcelId);
+                tx.output(TitleContract.ID, outputB);
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Split());
