@@ -103,9 +103,9 @@ public class TitleContract implements Contract {
             });
         } else if (commandData instanceof Commands.Repossess) {
             requireThat(require -> {
-                require.using("There must be one input on Repossess Command.",
+                require.using("There must be one input on Repossess Command",
                         tx.getInputStates().size() == 1);
-                require.using("There must be one output on Repossess Command.",
+                require.using("There must be one output on Repossess Command",
                         tx.getOutputStates().size() == 1);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);

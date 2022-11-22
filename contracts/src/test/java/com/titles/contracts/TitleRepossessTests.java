@@ -18,28 +18,67 @@ public class TitleRepossessTests {
     TestIdentity county = new TestIdentity(new CordaX500Name("County",  "Brooklyn",  "US"));
 
     @Test
-    public void mergeCommandTest() {
-        TitleState titleA = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
-        TitleState titleB = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
-        TitleState titleMerged = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
+    public void repossessCommandTest() {
+        TitleState input = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
+        TitleState inputWithCountyAlready = new TitleState(county.getParty(), county.getParty(), "123 Main St", "123456789");
+        TitleState outputBadOwner = new TitleState(bob.getParty(), county.getParty(), "123 Main St", "123456789");
+        TitleState output = input.withNewOwner(county.getParty());
+        TitleState outputChangedAddress = new TitleState(county.getParty(), county.getParty(), "123 Yellow Brick Rd", "123456789");
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
-                tx.input(TitleContract.ID, titleA);
-                tx.input(TitleContract.ID, titleB);
-                tx.output(TitleContract.ID, titleMerged);
+                tx.output(TitleContract.ID, output);
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
-                        new TitleContract.Commands.Merge());
+                        new TitleContract.Commands.Repossess());
+                return tx.failsWith("There must be one input on Repossess Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Repossess());
+                return tx.failsWith("There must be one output on Repossess Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, inputWithCountyAlready);
+                tx.output(TitleContract.ID, output);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Repossess());
+                return tx.failsWith("Owner is already County, nothing to do on Repossess Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, outputBadOwner);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Repossess());
+                return tx.failsWith("New owner must be County on Repossess Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, outputChangedAddress);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Repossess());
+                return tx.failsWith("All attributes (except new owner as county) must be the same on Repossess Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, output);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey()),
+                        new TitleContract.Commands.Repossess());
+                return tx.failsWith("County can only sign Repossess Command.");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, output);
+                tx.command(
+                        Arrays.asList(county.getPublicKey()),
+                        new TitleContract.Commands.Repossess());
                 return tx.verifies();
             });
-//
-//            l.transaction(tx -> {
-//                tx.output(TitleContract.ID, state);
-//                tx.command(
-//                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
-//                        new TitleContract.Commands.Issue());
-//            });
-//            return null;
             return null;
         });
     }
