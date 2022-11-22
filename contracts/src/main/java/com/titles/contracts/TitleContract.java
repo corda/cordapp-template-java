@@ -66,7 +66,7 @@ public class TitleContract implements Contract {
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
                 // output state should be the same as input state except for the owner
                 TitleState compare = input.withNewOwner(output.getOwner());
-                require.using("Owner has to be different on Transfer Command",
+                require.using("Owner has to change on Transfer Command",
                         !input.getOwner().equals(output.getOwner()));
                 require.using("All attributes (except new owner) must be the same on Transfer Command",
                         compare.equals(output));

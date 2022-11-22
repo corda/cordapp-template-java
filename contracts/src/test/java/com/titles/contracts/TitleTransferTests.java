@@ -30,13 +30,26 @@ public class TitleTransferTests {
 
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
+                tx.output(TitleContract.ID, output);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Transfer());
+                return tx.failsWith("There must be one input on Transfer Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Transfer());
+                return tx.failsWith("There must be one output on Transfer Command");
+            });
+            l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
                 tx.output(TitleContract.ID, badNewOwner);
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
-                // fails due to no new owner
-                return tx.failsWith("Owner has to be different on Transfer Command");
+                return tx.failsWith("Owner has to change on Transfer Command");
             });
             l.transaction(tx -> {
                 tx.input(TitleContract.ID, input);
@@ -44,7 +57,6 @@ public class TitleTransferTests {
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
-                // fails due to changed address
                 return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
@@ -53,7 +65,6 @@ public class TitleTransferTests {
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
-                // fails due to changed address
                 return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
@@ -62,7 +73,6 @@ public class TitleTransferTests {
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
-                // fails due to changed address
                 return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
@@ -71,7 +81,6 @@ public class TitleTransferTests {
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), bob.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
-                // fails due to different linearId
                 return tx.failsWith("All attributes (except new owner) must be the same on Transfer Command");
             });
             l.transaction(tx -> {
@@ -80,7 +89,6 @@ public class TitleTransferTests {
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
                         new TitleContract.Commands.Transfer());
-                // fails due to missing signer
                 return tx.failsWith("Old Owner, new Owner, and County must sign on Transfer Command");
             });
             l.transaction(tx -> {
