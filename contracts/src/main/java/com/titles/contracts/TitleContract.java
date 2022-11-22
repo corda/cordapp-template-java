@@ -128,16 +128,36 @@ public class TitleContract implements Contract {
                 return null;
             });
         } else if (commandData instanceof Commands.Merge) {
-            // TODO: Implement Merge command
             requireThat(require -> {
-                require.using("There must be two or more inputs on Merge Command.",
+                require.using("There must be two or more inputs on Merge Command",
                         tx.getInputStates().size() >= 2);
-                require.using("There must be one output state on Merge Command.",
+                require.using("There must be one output state on Merge Command",
                         tx.getOutputStates().size() == 1);
-                require.using("Merge Command not yet supported.",
-                        false);
-                return null;
-            });
+                require.using("Parcel IDs must be unique for all inputs on Merge Command",
+                        tx.inputsOfType(TitleState.class).stream().map(TitleState::getParcelId)
+                                .distinct().count() == tx.getInputStates().size());
+                require.using("All input states must have same Owner on Merge Command",
+                        tx.inputsOfType(TitleState.class).stream().map(TitleState::getOwner)
+                                .distinct().count() == 1);
+                require.using("All input states must have same County on Merge Command",
+                        tx.inputsOfType(TitleState.class).stream().map(TitleState::getCounty)
+                                .distinct().count() == 1);
+                TitleState input = tx.inputsOfType(TitleState.class).get(0);
+                TitleState output = tx.outputsOfType(TitleState.class).get(0);
+                require.using("Owner must remain the same on Merge Command",
+                        input.getOwner().equals(output.getOwner()));
+                require.using("County must remain the same on Merge Command",
+                        input.getCounty().equals(output.getCounty()));
+                HashSet<PublicKey> requiredSigners = new HashSet<>(
+                        Arrays.asList(
+                                input.getOwner().getOwningKey(),
+                                input.getCounty().getOwningKey()
+                        ));
+                HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
+                require.using(
+                        "Owner and County must sign Merge Command",
+                        requiredSigners.equals(signerKeys));
+                return null;            });
         } else if (commandData instanceof Commands.Split) {
             requireThat(require -> {
                 require.using("There must be one input on Split Command",
@@ -147,8 +167,11 @@ public class TitleContract implements Contract {
                 require.using("Parcel IDs must be unique for all outputs on Split Command",
                         tx.outputsOfType(TitleState.class).stream().map(TitleState::getParcelId)
                                 .distinct().count() == tx.getOutputStates().size());
-                require.using("All output states must have same owner on Split Command",
+                require.using("All output states must have same Owner on Split Command",
                         tx.outputsOfType(TitleState.class).stream().map(TitleState::getOwner)
+                                .distinct().count() == 1);
+                require.using("All output states must have same County on Split Command",
+                        tx.outputsOfType(TitleState.class).stream().map(TitleState::getCounty)
                                 .distinct().count() == 1);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 TitleState output = tx.outputsOfType(TitleState.class).get(0);
