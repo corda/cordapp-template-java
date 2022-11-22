@@ -16,30 +16,89 @@ public class TitleSplitTests {
     TestIdentity alice = new TestIdentity(new CordaX500Name("Alice",  "TestLand",  "US"));
     TestIdentity bob = new TestIdentity(new CordaX500Name("Bob",  "TestLand",  "US"));
     TestIdentity county = new TestIdentity(new CordaX500Name("County",  "Brooklyn",  "US"));
+    TestIdentity countyB = new TestIdentity(new CordaX500Name("County",  "Brooklyn",  "US"));
 
     @Test
-    public void mergeCommandTest() {
-        TitleState titleA = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
-        TitleState titleB = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
-        TitleState titleMerged = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
+    public void splitCommandTest() {
+        TitleState input = new TitleState(alice.getParty(), county.getParty(), "123 Main St", "123456789");
+        TitleState outputA = new TitleState(alice.getParty(), county.getParty(), "123 Main St A", "123456788");
+        TitleState outputB = new TitleState(alice.getParty(), county.getParty(), "123 Main St B", "123456789");
+        TitleState outputDifferentOwner = new TitleState(bob.getParty(), county.getParty(), "123 Main St B", "123456787");
+        TitleState inputDifferentOwner = new TitleState(bob.getParty(), county.getParty(), "123 Main St", "123456789");
+        TitleState inputDifferentCounty = new TitleState(alice.getParty(), countyB.getParty(), "123 Main St", "123456789");
+        TitleState outputConflictParcelId = new TitleState(alice.getParty(), county.getParty(), "123 Main St C", "123456789");
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
-                tx.input(TitleContract.ID, titleA);
-                tx.input(TitleContract.ID, titleB);
-                tx.output(TitleContract.ID, titleMerged);
+                tx.output(TitleContract.ID, outputA);
+                tx.output(TitleContract.ID, outputB);
                 tx.command(
                         Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
-                        new TitleContract.Commands.Merge());
+                        new TitleContract.Commands.Split());
+                return tx.failsWith("There must be one input on Split Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, outputB);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Split());
+                return tx.failsWith("There must be two or more outputs on Split Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, outputA);
+                tx.output(TitleContract.ID, outputB);
+                tx.output(TitleContract.ID, outputConflictParcelId);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Split());
+                return tx.failsWith("Parcel IDs must be unique for all outputs on Split Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, outputA);
+                tx.output(TitleContract.ID, outputDifferentOwner);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Split());
+                return tx.failsWith("All output states must have same owner on Split Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, inputDifferentOwner);
+                tx.output(TitleContract.ID, outputA);
+                tx.output(TitleContract.ID, outputB);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Split());
+                return tx.failsWith("Owner must remain the same on Split Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, inputDifferentCounty);
+                tx.output(TitleContract.ID, outputA);
+                tx.output(TitleContract.ID, outputB);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Split());
+                return tx.failsWith("County must remain the same on Split Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, outputA);
+                tx.output(TitleContract.ID, outputB);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), bob.getPublicKey()),
+                        new TitleContract.Commands.Split());
+                return tx.failsWith("Owner and County must sign Split Command");
+            });
+            l.transaction(tx -> {
+                tx.input(TitleContract.ID, input);
+                tx.output(TitleContract.ID, outputA);
+                tx.output(TitleContract.ID, outputB);
+                tx.command(
+                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
+                        new TitleContract.Commands.Split());
                 return tx.verifies();
             });
-//
-//            l.transaction(tx -> {
-//                tx.output(TitleContract.ID, state);
-//                tx.command(
-//                        Arrays.asList(alice.getPublicKey(), county.getPublicKey()),
-//                        new TitleContract.Commands.Issue());
-//            });
-//            return null;
             return null;
         });
     }

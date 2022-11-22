@@ -139,17 +139,32 @@ public class TitleContract implements Contract {
                 return null;
             });
         } else if (commandData instanceof Commands.Split) {
-            // TODO: Implement Split command
             requireThat(require -> {
-                require.using("There must be one input on Split Command.",
+                require.using("There must be one input on Split Command",
                         tx.getInputStates().size() == 1);
-                require.using("There must be two or more outputs on Split Command.",
+                require.using("There must be two or more outputs on Split Command",
                         tx.getOutputStates().size() >= 2);
-                require.using("Parcel IDs must be unique for all outputs on Split Command.",
+                require.using("Parcel IDs must be unique for all outputs on Split Command",
                         tx.outputsOfType(TitleState.class).stream().map(TitleState::getParcelId)
                                 .distinct().count() == tx.getOutputStates().size());
-                require.using("Split Command not yet supported.",
-                        false);
+                require.using("All output states must have same owner on Split Command",
+                        tx.outputsOfType(TitleState.class).stream().map(TitleState::getOwner)
+                                .distinct().count() == 1);
+                TitleState input = tx.inputsOfType(TitleState.class).get(0);
+                TitleState output = tx.outputsOfType(TitleState.class).get(0);
+                require.using("Owner must remain the same on Split Command",
+                        input.getOwner().equals(output.getOwner()));
+                require.using("County must remain the same on Split Command",
+                        input.getCounty().equals(output.getCounty()));
+                HashSet<PublicKey> requiredSigners = new HashSet<>(
+                        Arrays.asList(
+                                input.getOwner().getOwningKey(),
+                                input.getCounty().getOwningKey()
+                        ));
+                HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
+                require.using(
+                        "Owner and County must sign Split Command",
+                        requiredSigners.equals(signerKeys));
                 return null;
             });
         }
