@@ -111,9 +111,9 @@ public class TitleContract implements Contract {
             });
         } else if (commandData instanceof Commands.Retire) {
             requireThat(require -> {
-                require.using("There must be one input on Retire Command.",
+                require.using("There must be one input on Retire Command",
                         tx.getInputStates().size() == 1);
-                require.using("There must be no output on Retire Command.",
+                require.using("There must be no output on Retire Command",
                         tx.getOutputStates().size() == 0);
                 TitleState input = tx.inputsOfType(TitleState.class).get(0);
                 HashSet<PublicKey> requiredSigners = new HashSet<>(
@@ -123,7 +123,7 @@ public class TitleContract implements Contract {
                         ));
                 HashSet<PublicKey> signerKeys = new HashSet<>(tx.getCommand(0).getSigners());
                 require.using(
-                        "Old owner has to sign Retire transaction.",
+                        "Owner and County must sign on Retire Command",
                         requiredSigners.equals(signerKeys));
                 return null;
             });
