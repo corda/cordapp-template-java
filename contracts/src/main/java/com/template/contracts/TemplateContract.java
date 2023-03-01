@@ -23,7 +23,7 @@ public class TemplateContract implements Contract {
     public void verify(LedgerTransaction tx) {
 
         /* We can use the requireSingleCommand function to extract command data from transaction.
-         * However, it is possible to have multiple commands in a signle transaction.*/
+         * However, it is possible to have multiple commands in a single transaction.*/
         //final CommandWithParties<Commands> command = requireSingleCommand(tx.getCommands(), Commands.class);
         final CommandData commandData = tx.getCommands().get(0).getValue();
 
