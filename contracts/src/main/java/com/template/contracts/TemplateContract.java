@@ -33,7 +33,7 @@ public class TemplateContract implements Contract {
 
             //Using Corda DSL function requireThat to replicate conditions-checks
             requireThat(require -> {
-                require.using("No inputs should be consumed when sending the Hello-World message.", tx.getInputStates().size() == 0);
+                require.using("No inputs should be consumed when sending the Hello-World message.", tx.getInputStates().isEmpty());
                 require.using("The message must be Hello-World", output.getMsg().equals("Hello-World"));
                 return null;
             });
