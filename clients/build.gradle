@@ -24,7 +24,7 @@ dependencies {
 }
 
 springBoot {
-    mainClassName = "com.template.webserver.Server"
+    mainClassName = "com.template.webserver.Starter"
 }
 
 /* The Client is the communication channel between the external and the node. This task will help you immediately
