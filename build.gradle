@@ -1,3 +1,5 @@
+import static org.gradle.api.JavaVersion.VERSION_11
+
 buildscript {//properties that you need to build the project
     Properties constants = new Properties()
     file("$projectDir/./constants.properties").withInputStream { constants.load(it) }
@@ -14,6 +16,7 @@ buildscript {//properties that you need to build the project
         log4j_version = constants.getProperty("log4jVersion")
         slf4j_version = constants.getProperty("slf4jVersion")
         corda_platform_version = constants.getProperty("platformVersion").toInteger()
+        snappy_version = constants.getProperty("snappyVersion")
         //springboot
         spring_boot_version = '2.0.2.RELEASE'
         spring_boot_gradle_plugin_version = '2.0.2.RELEASE'
@@ -24,6 +27,10 @@ buildscript {//properties that you need to build the project
                           '--add-opens', 'java.base/java.security.cert=ALL-UNNAMED', '--add-opens', 'java.base/java.security=ALL-UNNAMED',
                           '--add-opens', 'java.base/javax.net.ssl=ALL-UNNAMED', '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
                           '--add-opens', 'java.base/java.util.concurrent=ALL-UNNAMED', '--add-opens', 'java.sql/java.sql=ALL-UNNAMED',]
+
+        test_add_opens_fx = [  '--add-exports', 'java.base/sun.nio.ch=ALL-UNNAMED',
+                               '--add-exports', 'javafx.base/com.sun.javafx=ALL-UNNAMED',
+                               '--add-exports', 'javafx.base/com.sun.javafx.collections=ALL-UNNAMED']
 
     }
 

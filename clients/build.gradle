@@ -1,4 +1,6 @@
-apply plugin: 'org.springframework.boot'
+import static org.gradle.api.JavaVersion.VERSION_11
+
+//apply plugin: 'org.springframework.boot'
 
 sourceSets {
     main {
@@ -12,6 +14,9 @@ dependencies {
     // Corda dependencies.
     implementation "$corda_release_group:corda-rpc:$corda_release_version"
 
+    implementation "net.corda:corda-jackson:$corda_release_version"
+    implementation "$corda_core_release_group:corda-core:$corda_core_release_version"
+
     // CorDapp dependencies.
     implementation project(":contracts")
     implementation project(":workflows")
@@ -23,9 +28,9 @@ dependencies {
     implementation "org.slf4j:jul-to-slf4j:$slf4j_version"
 }
 
-springBoot {
-    mainClassName = "com.template.webserver.Server"
-}
+//springBoot {
+//    mainClassName = "com.template.webserver.Server"
+//}
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions {

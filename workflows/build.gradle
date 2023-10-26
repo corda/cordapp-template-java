@@ -17,7 +17,7 @@ sourceSets {
     main {
         java {
             srcDir 'src/main/java'
-            java.outputDir = file('bin/main')
+//            java.outputDir = file('bin/main')
         }
         resources {
             srcDir rootProject.file("config/dev")
@@ -26,7 +26,7 @@ sourceSets {
     test {
         java {
             srcDir 'src/test/java'
-            java.outputDir = file('bin/main')
+//            java.outputDir = file('bin/main')
         }
         resources {
             srcDir rootProject.file("config/test")
@@ -42,17 +42,21 @@ sourceSets {
 }
 
 configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
+    integrationTestCompile.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntimeOnly
 }
 
 dependencies {
+    cordaProvided "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
     testImplementation "junit:junit:$junit_version"
+    cordaProvided group: 'com.google.guava', name: 'guava', version: '23.5-jre'
 
     // Corda dependencies.
     cordaProvided "$corda_core_release_group:corda-core:$corda_core_release_version"
     corda "$corda_release_group:corda:$corda_release_version"
     testImplementation "$corda_release_group:corda-node-driver:$corda_release_version"
+
+    testRuntimeOnly "org.iq80.snappy:snappy:$snappy_version"
 
     // CorDapp dependencies.
     cordapp project(":contracts")
@@ -91,4 +95,9 @@ quasar {
 task integrationTest(type: Test, dependsOn: []) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
+    jvmArgs = rootProject.ext.test_add_opens +  test_add_opens_fx
+}
+
+test {
+    jvmArgs = rootProject.ext.test_add_opens
 }
