@@ -30,7 +30,7 @@ pluginManagement {
 }
 
 // Root project name, used in naming the project as a whole and used in naming objects built by the project.
-rootProject.name = 'cordapp-template-kotlin'
+rootProject.name = 'cordapp-template-java'
 include ':workflows'
 include ':contracts'
 
