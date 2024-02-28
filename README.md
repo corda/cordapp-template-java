@@ -1,4 +1,4 @@
-# release-V5 cordapp-template-java
+# release-V5.2 cordapp-template-java
 
 
 This template repository provides:
