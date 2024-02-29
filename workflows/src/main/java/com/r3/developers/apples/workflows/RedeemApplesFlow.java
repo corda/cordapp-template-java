@@ -78,7 +78,7 @@ public class RedeemApplesFlow implements ClientStartableFlow {
         StateAndRef<AppleStamp> appleStampStateAndRef;
         try {
             appleStampStateAndRef = utxoLedgerService
-                    .findUnconsumedStatesByType(AppleStamp.class)
+                    .findUnconsumedStatesByExactType(AppleStamp.class, 100, Instant.now()).getResults()
                     .stream()
                     .filter(stateAndRef -> stateAndRef.getState().getContractState().getId().equals(stampId))
                     .iterator()
@@ -90,7 +90,7 @@ public class RedeemApplesFlow implements ClientStartableFlow {
         StateAndRef<BasketOfApples> basketOfApplesStampStateAndRef;
         try {
             basketOfApplesStampStateAndRef = utxoLedgerService
-                    .findUnconsumedStatesByType(BasketOfApples.class)
+                    .findUnconsumedStatesByExactType(BasketOfApples.class, 100, Instant.now()).getResults()
                     .stream()
                     .filter(
                             stateAndRef -> stateAndRef.getState().getContractState().getOwner().equals(

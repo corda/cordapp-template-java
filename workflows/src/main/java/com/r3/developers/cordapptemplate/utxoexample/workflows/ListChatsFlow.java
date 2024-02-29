@@ -11,6 +11,7 @@ import net.corda.v5.ledger.utxo.UtxoLedgerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class ListChatsFlow implements ClientStartableFlow {
         log.info("ListChatsFlow.call() called");
 
         // Queries the VNode's vault for unconsumed states and converts the result to a serializable DTO.
-        List<StateAndRef<ChatState>> states = utxoLedgerService.findUnconsumedStatesByType(ChatState.class);
+        List<StateAndRef<ChatState>> states = utxoLedgerService.findUnconsumedStatesByExactType(ChatState.class, 100, Instant.now()).getResults();
         List<ChatStateResults> results = states.stream().map( stateAndRef ->
             new ChatStateResults(
                     stateAndRef.getState().getContractState().getId(),
