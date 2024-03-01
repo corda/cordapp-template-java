@@ -14,6 +14,7 @@ import net.corda.v5.ledger.utxo.transaction.UtxoLedgerTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.*;
 import static java.util.Objects.*;
 import static java.util.stream.Collectors.toList;
@@ -41,7 +42,7 @@ public class GetChatFlow implements ClientStartableFlow {
         // Note, this code brings all unconsumed states back, then filters them.
         // This is an inefficient way to perform this operation when there are a large number of chats.
         // Note, you will get this error if you input an id which has no corresponding ChatState (common error).
-        List<StateAndRef<ChatState>> chatStateAndRefs = ledgerService.findUnconsumedStatesByType(ChatState.class);
+        List<StateAndRef<ChatState>> chatStateAndRefs = ledgerService.findUnconsumedStatesByExactType(ChatState.class, 100, Instant.now()).getResults();
         List<StateAndRef<ChatState>> chatStateAndRefsWithId = chatStateAndRefs.stream()
                 .filter(sar -> sar.getState().getContractState().getId().equals(flowArgs.getId())).collect(toList());
         if (chatStateAndRefsWithId.size() != 1) throw new CordaRuntimeException("Multiple or zero Chat states with id " + flowArgs.getId() + " found");
