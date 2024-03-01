@@ -49,7 +49,9 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
-//    testImplementation "com.r3.corda.ledger.utxo:contract-testing:$contractTestingVersion"
+
+    // This library has never been published
+    // testImplementation "com.r3.corda.ledger.utxo:contract-testing:$contractTestingVersion"
 }
 
 // The CordApp section.
