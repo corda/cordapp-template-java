@@ -35,8 +35,8 @@ allprojects {
         cordaCliBinDir = "${System.getProperty("user.home")}/.corda/cli"
 
         // Only need to supply these if you want to use an unpublished version
-        artifactoryUsername = findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
-        artifactoryPassword = findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_PASSWORD')
+//        artifactoryUsername = findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
+//        artifactoryPassword = findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_PASSWORD')
     }
 
     java {
@@ -64,16 +64,16 @@ allprojects {
         // These will be made publicly available.
         // Final location to be decided.
         // Repository subject to change
-        maven {
-            url = "$artifactoryContextUrl/corda-os-maven"
-            authentication {
-                basic(BasicAuthentication)
-            }
-            credentials {
-                username = findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
-                password = findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_PASSWORD')
-            }
-        }
+//        maven {
+//            url = "$artifactoryContextUrl/corda-os-maven"
+//            authentication {
+//                basic(BasicAuthentication)
+//            }
+//            credentials {
+//                username = findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
+//                password = findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_PASSWORD')
+//            }
+//        }
     }
 
     tasks.withType(Test).configureEach {
