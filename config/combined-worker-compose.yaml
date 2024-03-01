@@ -49,7 +49,7 @@ services:
     ]
 
   corda:
-    image: corda-os-docker.software.r3.com/corda-os-combined-worker-kafka:5.2.0.0-RC02
+    image: corda/corda-os-combined-worker-kafka:5.2.0.0-Preview5.2
     depends_on:
       - postgresql
       - kafka
