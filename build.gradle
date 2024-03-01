@@ -8,6 +8,8 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'net.corda.gradle.plugin'
+//    id 'corda-runtime-gradle-plugin'
+//    id 'net.corda.gradle.plugin.corda-runtime-gradle-plugin'
 }
 
 allprojects {

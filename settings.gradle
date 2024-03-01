@@ -26,6 +26,8 @@ pluginManagement {
         id 'org.jetbrains.kotlin.plugin.jpa' version kotlinVersion
         id 'org.jetbrains.kotlin.plugin.allopen' version kotlinVersion
         id 'net.corda.gradle.plugin' version cordaGradlePluginVersion
+//        id 'net.corda.gradle.plugin.corda-runtime-gradle-plugin' version cordaGradlePluginVersion
+//        id 'corda-runtime-gradle-plugin' version cordaGradlePluginVersion
     }
 }
 
