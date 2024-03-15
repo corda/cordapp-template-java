@@ -4,16 +4,6 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         mavenLocal()
-        maven {
-            url = "$artifactoryContextUrl/corda-os-maven"
-            authentication {
-                basic(BasicAuthentication)
-            }
-            credentials {
-                username = settings.ext.find('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
-                password = settings.ext.find('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_PASSWORD')
-            }
-        }
     }
 
     //  The plugin dependencies with versions of the plugins congruent with the specified CorDapp plugin version,

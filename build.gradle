@@ -33,10 +33,6 @@ allprojects {
         cordaRuntimePluginWorkspaceDir = "workspace"
         cordaBinDir = "${System.getProperty("user.home")}/.corda/corda5"
         cordaCliBinDir = "${System.getProperty("user.home")}/.corda/cli"
-
-        // Only need to supply these if you want to use an unpublished version
-        artifactoryUsername = findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
-        artifactoryPassword = findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_PASSWORD')
     }
 
     java {
@@ -58,22 +54,6 @@ allprojects {
         // All dependencies are held in Maven Central
         mavenLocal()
         mavenCentral()
-
-        // R3 Internal repositories for dev
-        // Repository provides Corda 5 binaries that implement Corda-API.
-        // These will be made publicly available.
-        // Final location to be decided.
-        // Repository subject to change
-        maven {
-            url = "$artifactoryContextUrl/corda-os-maven"
-            authentication {
-                basic(BasicAuthentication)
-            }
-            credentials {
-                username = findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
-                password = findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_PASSWORD')
-            }
-        }
     }
 
     tasks.withType(Test).configureEach {
