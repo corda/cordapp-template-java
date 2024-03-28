@@ -16,23 +16,24 @@ allprojects {
 
     // Configure Corda runtime gradle plugin
     cordaRuntimeGradlePlugin {
+        runtimeVersion = cordaRuntimeVersion
         notaryVersion = cordaNotaryPluginsVersion
         notaryCpiName = "NotaryServer"
         corDappCpiName = "MyCorDapp"
-        cpiUploadTimeout = "30000"
-        vnodeRegistrationTimeout = "60000"
-        cordaProcessorTimeout = "300000"
-        workflowsModuleName = "workflows"
+        cpiUploadTimeout = cpiUploadDefault
+        vnodeRegistrationTimeout = vnodeRegistrationTimeoutDefault
+        cordaProcessorTimeout = processorTimeout
+        workflowsModuleName = workflowsModule
         cordaClusterURL = "https://localhost:8888"
         cordaRestUser = "admin"
         cordaRestPasswd ="admin"
         composeFilePath = "config/combined-worker-compose.yaml"
         networkConfigFile = "config/static-network-config.json"
         r3RootCertFile = "config/r3-ca-key.pem"
-        skipTestsDuringBuildCpis = "false"
-        cordaRuntimePluginWorkspaceDir = "workspace"
-        cordaBinDir = "${System.getProperty("user.home")}/.corda/corda5"
-        cordaCliBinDir = "${System.getProperty("user.home")}/.corda/cli"
+        skipTestsDuringBuildCpis = skipContractTestsDuringBuildCpis
+        cordaRuntimePluginWorkspaceDir = workspaceDirectory
+        cordaBinDir = "${System.getProperty("user.home")}/$cordaBinariesDirectory"
+        cordaCliBinDir = "${System.getProperty("user.home")}/$cordaCliBinariesDirectory"
 
         // Only need to supply these if you want to use an unpublished version
         artifactoryUsername = findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME')
